@@ -1,683 +1,326 @@
 {
-  "campeonato": "Mundial de Futebol 2026 - Simulação Dinâmica",
-  "proximo_jogo_index": 4,
+  "proximo_jogo_index": 2,
   "jogos_calendario": [
     {
-      "id_jogo": "JOGO-01",
-      "fase": "Jornada 1",
+      "id_jogo": "GA_1",
+      "fase": "Grupo A - Jogo 1",
       "equipas": [
-        "Portugal",
+        "Alemanha",
+        "Espanha"
+      ]
+    },
+    {
+      "id_jogo": "GB_1",
+      "fase": "Grupo B - Jogo 1",
+      "equipas": [
+        "Argentina",
+        "Inglaterra"
+      ]
+    },
+    {
+      "id_jogo": "GA_2",
+      "fase": "Grupo A - Jogo 2",
+      "equipas": [
+        "Alemanha",
+        "Brasil"
+      ]
+    },
+    {
+      "id_jogo": "GB_2",
+      "fase": "Grupo B - Jogo 2",
+      "equipas": [
+        "Argentina",
         "França"
       ]
     },
     {
-      "id_jogo": "JOGO-02",
-      "fase": "Jornada 1",
+      "id_jogo": "GA_3",
+      "fase": "Grupo A - Jogo 3",
       "equipas": [
-        "Brasil",
-        "Argentina"
+        "Alemanha",
+        "Uruguai"
       ]
     },
     {
-      "id_jogo": "JOGO-03",
-      "fase": "Jornada 2",
+      "id_jogo": "GB_3",
+      "fase": "Grupo B - Jogo 3",
       "equipas": [
-        "Portugal",
-        "Argentina"
-      ]
-    },
-    {
-      "id_jogo": "JOGO-04",
-      "fase": "Jornada 2",
-      "equipas": [
-        "Brasil",
-        "França"
-      ]
-    },
-    {
-      "id_jogo": "JOGO-05",
-      "fase": "Jornada 3",
-      "equipas": [
-        "Uruguai",
+        "Argentina",
         "Portugal"
       ]
     },
     {
-      "id_jogo": "JOGO-06",
-      "fase": "Jornada 3",
+      "id_jogo": "GA_4",
+      "fase": "Grupo A - Jogo 4",
+      "equipas": [
+        "Espanha",
+        "Brasil"
+      ]
+    },
+    {
+      "id_jogo": "GB_4",
+      "fase": "Grupo B - Jogo 4",
+      "equipas": [
+        "Inglaterra",
+        "França"
+      ]
+    },
+    {
+      "id_jogo": "GA_5",
+      "fase": "Grupo A - Jogo 5",
+      "equipas": [
+        "Espanha",
+        "Uruguai"
+      ]
+    },
+    {
+      "id_jogo": "GB_5",
+      "fase": "Grupo B - Jogo 5",
+      "equipas": [
+        "Inglaterra",
+        "Portugal"
+      ]
+    },
+    {
+      "id_jogo": "GA_6",
+      "fase": "Grupo A - Jogo 6",
+      "equipas": [
+        "Brasil",
+        "Uruguai"
+      ]
+    },
+    {
+      "id_jogo": "GB_6",
+      "fase": "Grupo B - Jogo 6",
       "equipas": [
         "França",
-        "Argentina"
+        "Portugal"
       ]
     }
   ],
   "jogos": [
     {
-      "id_jogo": "JOGO-01",
-      "fase": "Jornada 1",
+      "id_jogo": "GA_1",
+      "fase": "Grupo A - Jogo 1",
       "equipas": [
-        "Portugal",
-        "França"
+        "Alemanha",
+        "Espanha"
       ],
-      "resultado": "2-0",
+      "resultado": "0-0",
       "estatisticas_coletivas": {
         "xg": [
-          1.9,
-          0.15
+          0.17,
+          0.13
         ],
         "posse": [
-          50,
-          50
+          65,
+          35
         ],
         "remates_totais": [
-          14,
-          13
+          29,
+          8
         ],
         "remates_baliza": [
-          3,
-          3
-        ],
-        "grandes_oportunidades": [
-          3,
-          1
-        ],
-        "cantos": [
-          5,
-          5
-        ],
-        "passes_detalhe": [
-          [
-            202,
-            247
-          ],
-          [
-            230,
-            280
-          ]
-        ],
-        "amarelos": [
-          1,
-          3
-        ]
-      },
-      "estatisticas_jogadores": [
-        {
-          "nome": "Cristiano Ronaldo",
-          "posicao": "Avançado",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 1,
-          "assistencias": 0,
-          "cortes_ganhos": 1,
-          "passes": {
-            "completos": 38,
-            "totais": 43
-          },
-          "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 7,
-            "aereos_ganhos": 2,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "Bruno Fernandes",
-          "posicao": "Médio",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 30,
-            "totais": 37
-          },
-          "duelos": {
-            "solo_ganhos": 3,
-            "solo_totais": 6,
-            "aereos_ganhos": 2,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Rafael Leão",
-          "posicao": "Avançado",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 1,
-          "assistencias": 1,
-          "cortes_ganhos": 0,
-          "passes": {
-            "completos": 48,
-            "totais": 64
-          },
-          "duelos": {
-            "solo_ganhos": 3,
-            "solo_totais": 8,
-            "aereos_ganhos": 1,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Rúben Dias",
-          "posicao": "Defesa",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 4,
-          "passes": {
-            "completos": 47,
-            "totais": 58
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 8,
-            "aereos_ganhos": 3,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "João Cancelo",
-          "posicao": "Defesa",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 6,
-          "passes": {
-            "completos": 39,
-            "totais": 45
-          },
-          "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 8,
-            "aereos_ganhos": 2,
-            "aereos_totais": 4
-          }
-        },
-        {
-          "nome": "Kylian Mbappé",
-          "posicao": "Avançado",
-          "equipa": "França",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 47,
-            "totais": 58
-          },
-          "duelos": {
-            "solo_ganhos": 2,
-            "solo_totais": 6,
-            "aereos_ganhos": 3,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Antoine Griezmann",
-          "posicao": "Médio",
-          "equipa": "França",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 1,
-          "passes": {
-            "completos": 49,
-            "totais": 55
-          },
-          "duelos": {
-            "solo_ganhos": 3,
-            "solo_totais": 8,
-            "aereos_ganhos": 2,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "Ousmane Dembélé",
-          "posicao": "Avançado",
-          "equipa": "França",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 44,
-            "totais": 56
-          },
-          "duelos": {
-            "solo_ganhos": 2,
-            "solo_totais": 8,
-            "aereos_ganhos": 1,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "William Saliba",
-          "posicao": "Defesa",
-          "equipa": "França",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 6,
-          "passes": {
-            "completos": 40,
-            "totais": 52
-          },
-          "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 7,
-            "aereos_ganhos": 3,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "Theo Hernández",
-          "posicao": "Defesa",
-          "equipa": "França",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 1,
-          "cortes_ganhos": 5,
-          "passes": {
-            "completos": 50,
-            "totais": 59
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 7,
-            "aereos_ganhos": 2,
-            "aereos_totais": 6
-          }
-        }
-      ]
-    },
-    {
-      "id_jogo": "JOGO-02",
-      "fase": "Jornada 1",
-      "equipas": [
-        "Brasil",
-        "Argentina"
-      ],
-      "resultado": "0-2",
-      "estatisticas_coletivas": {
-        "xg": [
-          0.15,
-          1.25
-        ],
-        "posse": [
-          52,
-          48
-        ],
-        "remates_totais": [
-          16,
-          16
-        ],
-        "remates_baliza": [
-          1,
-          5
-        ],
-        "grandes_oportunidades": [
-          1,
+          4,
           2
         ],
+        "grandes_oportunidades": [
+          2,
+          0
+        ],
         "cantos": [
-          5,
-          3
+          8,
+          1
         ],
         "passes_detalhe": [
           [
-            212,
-            248
+            452,
+            689
           ],
           [
-            184,
-            230
+            115,
+            385
           ]
         ],
         "amarelos": [
-          2,
+          1,
+          3
+        ],
+        "vermelhos": [
+          1,
           0
         ]
       },
       "estatisticas_jogadores": [
         {
-          "nome": "Vinícius Jr",
+          "nome": "Florian Wirtz",
           "posicao": "Avançado",
-          "equipa": "Brasil",
+          "equipa": "Alemanha",
           "minutos_jogados": 90,
           "golos": 0,
           "assistencias": 0,
-          "cortes_ganhos": 0,
+          "cortes_ganhos": 1,
           "passes": {
-            "completos": 37,
-            "totais": 42
+            "completos": 24,
+            "totais": 39
           },
           "duelos": {
-            "solo_ganhos": 2,
-            "solo_totais": 6,
-            "aereos_ganhos": 2,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Rodrygo",
-          "posicao": "Avançado",
-          "equipa": "Brasil",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 41,
-            "totais": 46
-          },
-          "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 6,
-            "aereos_ganhos": 1,
+            "solo_ganhos": 3,
+            "solo_totais": 9,
+            "aereos_ganhos": 0,
             "aereos_totais": 4
           }
         },
         {
-          "nome": "Lucas Paquetá",
+          "nome": "Jamal Musiala",
           "posicao": "Médio",
-          "equipa": "Brasil",
+          "equipa": "Alemanha",
           "minutos_jogados": 90,
           "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 44,
-            "totais": 50
-          },
-          "duelos": {
-            "solo_ganhos": 2,
-            "solo_totais": 6,
-            "aereos_ganhos": 2,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Marquinhos",
-          "posicao": "Defesa",
-          "equipa": "Brasil",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 1,
-          "cortes_ganhos": 4,
-          "passes": {
-            "completos": 44,
-            "totais": 50
-          },
-          "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 7,
-            "aereos_ganhos": 1,
-            "aereos_totais": 4
-          }
-        },
-        {
-          "nome": "Éder Militão",
-          "posicao": "Defesa",
-          "equipa": "Brasil",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 4,
-          "passes": {
-            "completos": 46,
-            "totais": 60
-          },
-          "duelos": {
-            "solo_ganhos": 2,
-            "solo_totais": 6,
-            "aereos_ganhos": 3,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Lionel Messi",
-          "posicao": "Avançado",
-          "equipa": "Argentina",
-          "minutos_jogados": 90,
-          "golos": 1,
           "assistencias": 0,
           "cortes_ganhos": 0,
           "passes": {
             "completos": 30,
-            "totais": 39
+            "totais": 44
           },
           "duelos": {
-            "solo_ganhos": 2,
+            "solo_ganhos": 3,
+            "solo_totais": 7,
+            "aereos_ganhos": 0,
+            "aereos_totais": 4
+          }
+        },
+        {
+          "nome": "Antonio Rüdiger",
+          "posicao": "Defesa",
+          "equipa": "Alemanha",
+          "minutos_jogados": 90,
+          "golos": 0,
+          "assistencias": 0,
+          "cortes_ganhos": 2,
+          "passes": {
+            "completos": 25,
+            "totais": 35
+          },
+          "duelos": {
+            "solo_ganhos": 1,
             "solo_totais": 6,
             "aereos_ganhos": 1,
             "aereos_totais": 5
           }
         },
         {
-          "nome": "Julián Álvarez",
+          "nome": "Lamine Yamal",
           "posicao": "Avançado",
-          "equipa": "Argentina",
+          "equipa": "Espanha",
           "minutos_jogados": 90,
           "golos": 0,
           "assistencias": 0,
           "cortes_ganhos": 1,
           "passes": {
-            "completos": 32,
-            "totais": 38
+            "completos": 44,
+            "totais": 61
+          },
+          "duelos": {
+            "solo_ganhos": 1,
+            "solo_totais": 10,
+            "aereos_ganhos": 1,
+            "aereos_totais": 6
+          }
+        },
+        {
+          "nome": "Rodri",
+          "posicao": "Médio",
+          "equipa": "Espanha",
+          "minutos_jogados": 90,
+          "golos": 0,
+          "assistencias": 0,
+          "cortes_ganhos": 1,
+          "passes": {
+            "completos": 39,
+            "totais": 58
           },
           "duelos": {
             "solo_ganhos": 3,
             "solo_totais": 8,
-            "aereos_ganhos": 1,
-            "aereos_totais": 4
+            "aereos_ganhos": 0,
+            "aereos_totais": 6
           }
         },
         {
-          "nome": "Alexis Mac Allister",
-          "posicao": "Médio",
-          "equipa": "Argentina",
+          "nome": "Dani Carvajal",
+          "posicao": "Defesa",
+          "equipa": "Espanha",
           "minutos_jogados": 90,
           "golos": 0,
           "assistencias": 0,
-          "cortes_ganhos": 0,
+          "cortes_ganhos": 4,
           "passes": {
-            "completos": 49,
-            "totais": 61
+            "completos": 26,
+            "totais": 39
           },
           "duelos": {
-            "solo_ganhos": 2,
+            "solo_ganhos": 3,
             "solo_totais": 9,
-            "aereos_ganhos": 1,
+            "aereos_ganhos": 0,
             "aereos_totais": 4
-          }
-        },
-        {
-          "nome": "Cristian Romero",
-          "posicao": "Defesa",
-          "equipa": "Argentina",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 1,
-          "cortes_ganhos": 7,
-          "passes": {
-            "completos": 42,
-            "totais": 54
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 7,
-            "aereos_ganhos": 2,
-            "aereos_totais": 4
-          }
-        },
-        {
-          "nome": "Nicolás Otamendi",
-          "posicao": "Defesa",
-          "equipa": "Argentina",
-          "minutos_jogados": 90,
-          "golos": 1,
-          "assistencias": 1,
-          "cortes_ganhos": 5,
-          "passes": {
-            "completos": 31,
-            "totais": 38
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 6,
-            "aereos_ganhos": 2,
-            "aereos_totais": 6
           }
         }
       ]
     },
     {
-      "id_jogo": "JOGO-03",
-      "fase": "Jornada 2",
+      "id_jogo": "GB_1",
+      "fase": "Grupo B - Jogo 1",
       "equipas": [
-        "Portugal",
-        "Argentina"
+        "Argentina",
+        "Inglaterra"
       ],
-      "resultado": "2-1",
+      "resultado": "0-0",
       "estatisticas_coletivas": {
         "xg": [
-          1.62,
-          0.99
+          0.17,
+          0.13
         ],
         "posse": [
-          58,
-          42
+          55,
+          45
         ],
         "remates_totais": [
-          16,
-          14
+          31,
+          7
         ],
         "remates_baliza": [
-          5,
-          4
+          3,
+          1
         ],
         "grandes_oportunidades": [
           2,
-          2
+          0
         ],
         "cantos": [
-          6,
-          4
+          11,
+          2
         ],
         "passes_detalhe": [
           [
-            220,
-            259
+            539,
+            624
           ],
           [
-            196,
-            244
+            235,
+            357
           ]
         ],
         "amarelos": [
-          2,
+          0,
           3
+        ],
+        "vermelhos": [
+          0,
+          0
         ]
       },
       "estatisticas_jogadores": [
-        {
-          "nome": "Cristiano Ronaldo",
-          "posicao": "Avançado",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 1,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 52,
-            "totais": 64
-          },
-          "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 6,
-            "aereos_ganhos": 2,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "Bruno Fernandes",
-          "posicao": "Médio",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 39,
-            "totais": 49
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 8,
-            "aereos_ganhos": 3,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Rafael Leão",
-          "posicao": "Avançado",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 1,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 32,
-            "totais": 36
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 7,
-            "aereos_ganhos": 3,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "Rúben Dias",
-          "posicao": "Defesa",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 6,
-          "passes": {
-            "completos": 39,
-            "totais": 47
-          },
-          "duelos": {
-            "solo_ganhos": 3,
-            "solo_totais": 8,
-            "aereos_ganhos": 1,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "João Cancelo",
-          "posicao": "Defesa",
-          "equipa": "Portugal",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 5,
-          "passes": {
-            "completos": 58,
-            "totais": 63
-          },
-          "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 9,
-            "aereos_ganhos": 1,
-            "aereos_totais": 6
-          }
-        },
         {
           "nome": "Lionel Messi",
           "posicao": "Avançado",
@@ -685,34 +328,15 @@
           "minutos_jogados": 90,
           "golos": 0,
           "assistencias": 0,
-          "cortes_ganhos": 2,
+          "cortes_ganhos": 0,
           "passes": {
-            "completos": 49,
-            "totais": 64
+            "completos": 42,
+            "totais": 61
           },
           "duelos": {
-            "solo_ganhos": 4,
+            "solo_ganhos": 3,
             "solo_totais": 8,
-            "aereos_ganhos": 1,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "Julián Álvarez",
-          "posicao": "Avançado",
-          "equipa": "Argentina",
-          "minutos_jogados": 90,
-          "golos": 1,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 44,
-            "totais": 59
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 8,
-            "aereos_ganhos": 3,
+            "aereos_ganhos": 0,
             "aereos_totais": 5
           }
         },
@@ -725,14 +349,14 @@
           "assistencias": 0,
           "cortes_ganhos": 1,
           "passes": {
-            "completos": 31,
-            "totais": 35
+            "completos": 35,
+            "totais": 52
           },
           "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 9,
-            "aereos_ganhos": 3,
-            "aereos_totais": 6
+            "solo_ganhos": 3,
+            "solo_totais": 6,
+            "aereos_ganhos": 1,
+            "aereos_totais": 5
           }
         },
         {
@@ -742,276 +366,73 @@
           "minutos_jogados": 90,
           "golos": 0,
           "assistencias": 0,
-          "cortes_ganhos": 5,
+          "cortes_ganhos": 1,
           "passes": {
-            "completos": 31,
-            "totais": 35
+            "completos": 26,
+            "totais": 37
           },
           "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 9,
+            "solo_ganhos": 2,
+            "solo_totais": 7,
             "aereos_ganhos": 2,
             "aereos_totais": 6
           }
         },
         {
-          "nome": "Nicolás Otamendi",
-          "posicao": "Defesa",
-          "equipa": "Argentina",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 1,
-          "cortes_ganhos": 7,
-          "passes": {
-            "completos": 41,
-            "totais": 51
-          },
-          "duelos": {
-            "solo_ganhos": 3,
-            "solo_totais": 9,
-            "aereos_ganhos": 3,
-            "aereos_totais": 6
-          }
-        }
-      ]
-    },
-    {
-      "id_jogo": "JOGO-04",
-      "fase": "Jornada 2",
-      "equipas": [
-        "Brasil",
-        "França"
-      ],
-      "resultado": "1-2",
-      "estatisticas_coletivas": {
-        "xg": [
-          0.85,
-          1.49
-        ],
-        "posse": [
-          52,
-          48
-        ],
-        "remates_totais": [
-          12,
-          8
-        ],
-        "remates_baliza": [
-          3,
-          3
-        ],
-        "grandes_oportunidades": [
-          2,
-          3
-        ],
-        "cantos": [
-          4,
-          5
-        ],
-        "passes_detalhe": [
-          [
-            240,
-            290
-          ],
-          [
-            195,
-            238
-          ]
-        ],
-        "amarelos": [
-          3,
-          3
-        ]
-      },
-      "estatisticas_jogadores": [
-        {
-          "nome": "Vinícius Jr",
+          "nome": "Harry Kane",
           "posicao": "Avançado",
-          "equipa": "Brasil",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 48,
-            "totais": 57
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 6,
-            "aereos_ganhos": 3,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "Rodrygo",
-          "posicao": "Avançado",
-          "equipa": "Brasil",
-          "minutos_jogados": 90,
-          "golos": 1,
-          "assistencias": 0,
-          "cortes_ganhos": 0,
-          "passes": {
-            "completos": 45,
-            "totais": 56
-          },
-          "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 8,
-            "aereos_ganhos": 2,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Lucas Paquetá",
-          "posicao": "Médio",
-          "equipa": "Brasil",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 0,
-          "passes": {
-            "completos": 49,
-            "totais": 56
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 9,
-            "aereos_ganhos": 1,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Marquinhos",
-          "posicao": "Defesa",
-          "equipa": "Brasil",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 7,
-          "passes": {
-            "completos": 53,
-            "totais": 64
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 9,
-            "aereos_ganhos": 3,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Éder Militão",
-          "posicao": "Defesa",
-          "equipa": "Brasil",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 5,
-          "passes": {
-            "completos": 45,
-            "totais": 57
-          },
-          "duelos": {
-            "solo_ganhos": 4,
-            "solo_totais": 9,
-            "aereos_ganhos": 1,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Kylian Mbappé",
-          "posicao": "Avançado",
-          "equipa": "França",
-          "minutos_jogados": 90,
-          "golos": 1,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 51,
-            "totais": 62
-          },
-          "duelos": {
-            "solo_ganhos": 3,
-            "solo_totais": 9,
-            "aereos_ganhos": 1,
-            "aereos_totais": 4
-          }
-        },
-        {
-          "nome": "Antoine Griezmann",
-          "posicao": "Médio",
-          "equipa": "França",
+          "equipa": "Inglaterra",
           "minutos_jogados": 90,
           "golos": 0,
           "assistencias": 0,
           "cortes_ganhos": 1,
           "passes": {
-            "completos": 31,
-            "totais": 40
+            "completos": 37,
+            "totais": 52
           },
           "duelos": {
-            "solo_ganhos": 2,
-            "solo_totais": 6,
-            "aereos_ganhos": 3,
-            "aereos_totais": 6
-          }
-        },
-        {
-          "nome": "Ousmane Dembélé",
-          "posicao": "Avançado",
-          "equipa": "França",
-          "minutos_jogados": 90,
-          "golos": 1,
-          "assistencias": 0,
-          "cortes_ganhos": 2,
-          "passes": {
-            "completos": 31,
-            "totais": 37
-          },
-          "duelos": {
-            "solo_ganhos": 3,
-            "solo_totais": 7,
-            "aereos_ganhos": 3,
-            "aereos_totais": 5
-          }
-        },
-        {
-          "nome": "William Saliba",
-          "posicao": "Defesa",
-          "equipa": "França",
-          "minutos_jogados": 90,
-          "golos": 0,
-          "assistencias": 0,
-          "cortes_ganhos": 6,
-          "passes": {
-            "completos": 35,
-            "totais": 44
-          },
-          "duelos": {
-            "solo_ganhos": 5,
-            "solo_totais": 9,
-            "aereos_ganhos": 2,
+            "solo_ganhos": 1,
+            "solo_totais": 8,
+            "aereos_ganhos": 1,
             "aereos_totais": 4
           }
         },
         {
-          "nome": "Theo Hernández",
-          "posicao": "Defesa",
-          "equipa": "França",
+          "nome": "Jude Bellingham",
+          "posicao": "Médio",
+          "equipa": "Inglaterra",
           "minutos_jogados": 90,
           "golos": 0,
           "assistencias": 0,
-          "cortes_ganhos": 6,
+          "cortes_ganhos": 0,
           "passes": {
-            "completos": 47,
-            "totais": 55
+            "completos": 29,
+            "totais": 44
           },
           "duelos": {
             "solo_ganhos": 2,
-            "solo_totais": 8,
-            "aereos_ganhos": 3,
-            "aereos_totais": 6
+            "solo_totais": 9,
+            "aereos_ganhos": 1,
+            "aereos_totais": 4
+          }
+        },
+        {
+          "nome": "John Stones",
+          "posicao": "Defesa",
+          "equipa": "Inglaterra",
+          "minutos_jogados": 90,
+          "golos": 0,
+          "assistencias": 0,
+          "cortes_ganhos": 4,
+          "passes": {
+            "completos": 36,
+            "totais": 46
+          },
+          "duelos": {
+            "solo_ganhos": 1,
+            "solo_totais": 9,
+            "aereos_ganhos": 2,
+            "aereos_totais": 5
           }
         }
       ]
