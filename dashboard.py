@@ -11,7 +11,8 @@ from stats import calcular_pontuacao_jogador
 # Configuração da página Web do Streamlit
 st.set_page_config(page_title="Simulador Mundial 2026", layout="wide")
 
-caminho_json = "/mnt/c/Users/MarcoSil/OneDrive - QFree/Documents/Estudo/POS/DataAnalysis/dados_mundial.json"
+#caminho_json = "/mnt/c/Users/MarcoSil/OneDrive - QFree/Documents/Estudo/POS/DataAnalysis/dados_mundial.json"
+caminho_json = os.path.join(os.path.dirname(__file__), "dados_mundial.json")
 
 # Pool global de jogadores por seleção
 pool_jogadores = {
