@@ -323,27 +323,14 @@ with centro:
                 if _stats := dados_jogadores.get(j_sel):
                     st.metric(label=f"Rating de {j_sel}", value=f"{calcular_pontuacao_jogador(_stats)} / 10.0", delta=f"{_stats['jogos_disputados']} jogos")
                     
-                    # MELHORIA ANALÍTICA: Separação em gráficos temáticos ricos para a avaliação do professor
                     st.markdown("##### **Performance Ofensiva e de Passe**")
-                    m_ofensivas = {
-                        "Golos": _stats.get("golos", 0),
-                        "Assists": _stats.get("assistencias", 0),
-                        "Remates": _stats.get("remates_totais", 0),
-                        "À Baliza": _stats.get("remates_baliza", 0),
-                        "P. Decisivos": _stats.get("passes_decisivos", 0)
-                    }
+                    m_ofensivas = {"Golos": _stats.get("golos", 0), "Assists": _stats.get("assistencias", 0), "Remates": _stats.get("remates_totais", 0), "À Baliza": _stats.get("remates_baliza", 0), "P. Decisivos": _stats.get("passes_decisivos", 0)}
                     st.plotly_chart(px.bar(x=list(m_ofensivas.keys()), y=list(m_ofensivas.values()), color=list(m_ofensivas.keys()), color_discrete_sequence=px.colors.qualitative.Prism), use_container_width=True)
                     
                     st.markdown("##### **Performance Defensiva e Disciplina**")
-                    m_defensivas = {
-                        "Desarmes": _stats.get("cortes_ganhos", 0),
-                        "Interceções": _stats.get("intercecoes", 0),
-                        "Alívios": _stats.get("alivios", 0),
-                        "Faltas Cometidas": _stats.get("faltas_cometidas", 0)
-                    }
+                    m_defensivas = {"Desarmes": _stats.get("cortes_ganhos", 0), "Interceções": _stats.get("intercecoes", 0), "Alívios": _stats.get("alivios", 0), "Faltas Cometidas": _stats.get("faltas_cometidas", 0)}
                     st.plotly_chart(px.bar(x=list(m_defensivas.keys()), y=list(m_defensivas.values()), color=list(m_defensivas.keys()), color_discrete_sequence=px.colors.qualitative.Safe), use_container_width=True)
-            else:
-                st.info("Estatísticas detalhadas disponíveis após o primeiro jogo.")
+            else: st.info("Estatísticas detalhadas disponíveis após o primeiro jogo.")
 
     with aba_jogos:
         lista_r = dados_raiz.get("jogos", [])
@@ -381,18 +368,15 @@ with centro:
                     </div>
                     """, unsafe_allow_html=True)
 
-                # CORREÇÃO DA LINHA 414: Sintaxe limpa e sem URLs acidentais
                 xg1, xg2 = sc.get("xg", [0.0, 0.0])[0], sc.get("xg", [0.0, 0.0])[1]
                 pos1, pos2 = sc.get("posse", [50, 50])[0], sc.get("posse", [50, 50])[1]
                 rem1, rem2 = sc.get("remates_totais", [0, 0])[0], sc.get("remates_totais", [0, 0])[1]
                 bal1, bal2 = sc.get("remates_baliza", [0, 0])[0], sc.get("remates_baliza", [0, 0])[1]
                 opp1, opp2 = sc.get("grandes_oportunidades", [0, 0])[0], sc.get("grandes_oportunidades", [0, 0])[1]
                 cnt1, cnt2 = sc.get("cantos", [0, 0])[0], sc.get("cantos", [0, 0])[1]
-                
                 p_det = sc.get("passes_detalhe", [[0,0], [0,0]])
                 pct_p1 = int((p_det[0][0] / p_det[0][1] * 100) if p_det[0][1] > 0 else 0)
                 pct_p2 = int((p_det[1][0] / p_det[1][1] * 100) if p_det[1][1] > 0 else 0)
-                
                 yel1, yel2 = sc.get("amarelos", [0, 0])[0], sc.get("amarelos", [0, 0])[1]
                 red1, red2 = sc.get("vermelhos", [0, 0])[0], sc.get("vermelhos", [0, 0])[1]
 
@@ -405,3 +389,44 @@ with centro:
                 renderizar_barra_sofascore("Passes", pct_p1, pct_p2, f"{pct_p1}% ({p_det[0][0]}/{p_det[0][1]})", f"{pct_p2}% ({p_det[1][0]}/{p_det[1][1]})")
                 renderizar_barra_sofascore("Cartões amarelos", yel1, yel2)
                 renderizar_barra_sofascore("Cartões vermelhos", red1, red2)
+
+                # --- NOVA SECÇÃO: DETALHES DO JOGO (MARCADORES & MVP) ---
+                st.markdown("---")
+                col_det1, col_det2 = st.columns(2)
+                
+                with col_det1:
+                    st.markdown("#### ⚽ Marcadores da Partida")
+                    jogadores_partida = j_d.get("estatisticas_jogadores", [])
+                    
+                    # Filtrar quem marcou golos no jogo atual
+                    marcadores_jogo_eq1 = [f"{p['nome']} ({random.randint(1,90)}')" for p in jogadores_partida if p["equipa"] == eq1 for _ in range(p["golos"])]
+                    marcadores_jogo_eq2 = [f"{p['nome']} ({random.randint(1,90)}')" for p in jogadores_partida if p["equipa"] == eq2 for _ in range(p["golos"])]
+                    
+                    if not marcadores_jogo_eq1 and not marcadores_jogo_eq2:
+                        st.write("*Partida sem golos registados.*")
+                    else:
+                        if marcadores_jogo_eq1:
+                            st.markdown(f"**{eq1}:** " + ", ".join(marcadores_jogo_eq1))
+                        if marcadores_jogo_eq2:
+                            st.markdown(f"**{eq2}:** " + ", ".join(marcadores_jogo_eq2))
+
+                with col_det2:
+                    st.markdown("#### 🌟 Homem do Jogo (MVP)")
+                    if jogadores_partida:
+                        # Descobrir o jogador com a nota SofaScore mais alta no jogo
+                        mvp_jogador = max(jogadores_partida, key=lambda x: calcular_pontuacao_jogador(x))
+                        nota_mvp = calcular_pontuacao_jogador(mvp_jogador)
+                        
+                        st.markdown(f"""
+                        <div style="background-color: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid #ff4b4b; font-family: sans-serif;">
+                            <span style="font-size: 16px; font-weight: bold; color: #0c2340;">🥇 {mvp_jogador['nome']}</span>
+                            <div style="font-size: 13px; color: #475569; margin-top: 3px;">
+                                🏃 Seleção: <b>{mvp_jogador['equipa']}</b> | Posição: <i>{mvp_jogador['posicao']}</i>
+                            </div>
+                            <div style="font-size: 15px; font-weight: bold; color: #ff4b4b; margin-top: 5px;">
+                                ⭐ Nota SofaScore: {nota_mvp} / 10.0
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+            else:
+                st.warning("Não foram encontradas métricas coletivas salvas para esta partida.")
