@@ -194,7 +194,7 @@ with centro:
         venc_m1 = m1_jogo["equipas"][0] if g1_m1 >= g2_m1 else m1_jogo["equipas"][1]
         venc_m2 = m2_jogo["equipas"][0] if g1_m2 >= g2_m2 else m2_jogo["equipas"][1]
         
-        calendario.append({ "id_jogo": "F1", "fase": "Grande Final", "equipas": [venc_m1, venc_m2] })
+        calendario.append({ "id_jogo": "F1", "fase": "Grande Final", "equipas": [venc_m1, venc_venc_m2] })
         dados_raiz["jogos_calendario"] = calendario
         with open(caminho_json, 'w', encoding='utf-8') as f:
             json.dump(dados_raiz, f, indent=2, ensure_ascii=False)
@@ -278,7 +278,8 @@ with centro:
     st.markdown("---")
     dados_jogadores = carregar_dados_mundial(caminho_json)
 
-    aba_geral, aba_jogos = st.tabs(["📊 Tabelas Classificativas & Rankings", "📜 Histórico de Jogos"])
+    # NOVO: Adicionada a aba "Análise Comparativa Avançada" na navegação principal
+    aba_geral, aba_jogos, aba_analytics = st.tabs(["📊 Tabelas Classificativas & Rankings", "📜 Histórico de Jogos", "📈 Análise Comparativa Avançada"])
 
     with aba_geral:
         st.header("🏆 Classificação da Fase de Grupos")
@@ -313,8 +314,7 @@ with centro:
                     html_tabela += f'<div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f0f0f0;"><div style="display: flex; align-items: center; gap: 12px;"><span style="font-weight: bold; font-size: 14px; color: #7f8c8d; width: 20px; text-align: center;">{index+1}</span><div style="width: 36px; height: 36px; background-color: #f0f2f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #475569;">{jog["Jogador"][0]}</div><div><span style="font-size: 15px; font-weight: 600; color: #1e293b;">{jog["Jogador"]}</span><div style="font-size: 12px; color: #64748b; margin-top: 2px;">{jog["Seleção"]}</div></div></div><div><span style="font-size: 18px; font-weight: bold; color: #0c2340;">{v_e}</span> <span style="font-size: 11px; color: #94a3b8;">{l_m}</span></div></div>'
                 html_tabela += "</div>"
                 st.markdown(html_tabela, unsafe_allow_html=True)
-            else:
-                st.info("Aguardando jogos para popular o ranking.")
+            else: st.info("Aguardando jogos para popular o ranking.")
 
         with col_g2:
             st.header("👤 Detalhes do Jogador")
@@ -390,43 +390,91 @@ with centro:
                 renderizar_barra_sofascore("Cartões amarelos", yel1, yel2)
                 renderizar_barra_sofascore("Cartões vermelhos", red1, red2)
 
-                # --- NOVA SECÇÃO: DETALHES DO JOGO (MARCADORES & MVP) ---
                 st.markdown("---")
                 col_det1, col_det2 = st.columns(2)
-                
                 with col_det1:
                     st.markdown("#### ⚽ Marcadores da Partida")
                     jogadores_partida = j_d.get("estatisticas_jogadores", [])
-                    
-                    # Filtrar quem marcou golos no jogo atual
                     marcadores_jogo_eq1 = [f"{p['nome']} ({random.randint(1,90)}')" for p in jogadores_partida if p["equipa"] == eq1 for _ in range(p["golos"])]
                     marcadores_jogo_eq2 = [f"{p['nome']} ({random.randint(1,90)}')" for p in jogadores_partida if p["equipa"] == eq2 for _ in range(p["golos"])]
-                    
-                    if not marcadores_jogo_eq1 and not marcadores_jogo_eq2:
-                        st.write("*Partida sem golos registados.*")
+                    if not marcadores_jogo_eq1 and not marcadores_jogo_eq2: st.write("*Partida sem golos registados.*")
                     else:
-                        if marcadores_jogo_eq1:
-                            st.markdown(f"**{eq1}:** " + ", ".join(marcadores_jogo_eq1))
-                        if marcadores_jogo_eq2:
-                            st.markdown(f"**{eq2}:** " + ", ".join(marcadores_jogo_eq2))
+                        if marcadores_jogo_eq1: st.markdown(f"**{eq1}:** " + ", ".join(marcadores_jogo_eq1))
+                        if marcadores_jogo_eq2: st.markdown(f"**{eq2}:** " + ", ".join(marcadores_jogo_eq2))
 
                 with col_det2:
                     st.markdown("#### 🌟 Homem do Jogo (MVP)")
                     if jogadores_partida:
-                        # Descobrir o jogador com a nota SofaScore mais alta no jogo
                         mvp_jogador = max(jogadores_partida, key=lambda x: calcular_pontuacao_jogador(x))
-                        nota_mvp = calcular_pontuacao_jogador(mvp_jogador)
-                        
                         st.markdown(f"""
                         <div style="background-color: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid #ff4b4b; font-family: sans-serif;">
                             <span style="font-size: 16px; font-weight: bold; color: #0c2340;">🥇 {mvp_jogador['nome']}</span>
-                            <div style="font-size: 13px; color: #475569; margin-top: 3px;">
-                                🏃 Seleção: <b>{mvp_jogador['equipa']}</b> | Posição: <i>{mvp_jogador['posicao']}</i>
-                            </div>
-                            <div style="font-size: 15px; font-weight: bold; color: #ff4b4b; margin-top: 5px;">
-                                ⭐ Nota SofaScore: {nota_mvp} / 10.0
-                            </div>
+                            <div style="font-size: 13px; color: #475569; margin-top: 3px;">🏃 Seleção: <b>{mvp_jogador['equipa']}</b> | Posição: <i>{mvp_jogador['posicao']}</i></div>
+                            <div style="font-size: 15px; font-weight: bold; color: #ff4b4b; margin-top: 5px;">⭐ Nota SofaScore: {calcular_pontuacao_jogador(mvp_jogador)} / 10.0</div>
                         </div>
                         """, unsafe_allow_html=True)
-            else:
-                st.warning("Não foram encontradas métricas coletivas salvas para esta partida.")
+            else: st.warning("Não foram encontradas métricas coletivas salvas.")
+
+    # --- NOVA ABA: VISUALIZAÇÃO DE MÉTRICAS COMPARATIVAS ---
+    with aba_analytics:
+        st.header("📈 Gráficos Comparativos do Torneio")
+        st.markdown("Utiliza os seletores abaixo para cruzar dados e analisar as métricas de performance coletiva das seleções.")
+        
+        # Mapear dados das equipas acumulados através do data_parser
+        lista_stats_equipas = carregar_estatisticas_equipas(caminho_json)
+        
+        if not lista_stats_equipas:
+            st.info("Aguardando a realização de jogos para processar métricas comparativas.")
+        else:
+            df_analytics = pd.DataFrame(lista_stats_equipas)
+            
+            # Adicionar métrica agregada para cartões (extraída do histórico de jogos)
+            amarelos_dict = {eq: 0 for eq in pool_jogadores.keys()}
+            vermelhos_dict = {eq: 0 for eq in pool_jogadores.keys()}
+            for j in dados_raiz.get("jogos", []):
+                eq1, eq2 = j["equipas"][0], j["equipas"][1]
+                sc = j.get("estatisticas_coletivas", {})
+                if sc:
+                    amarelos_dict[eq1] += sc.get("amarelos", [0,0])[0]
+                    amarelos_dict[eq2] += sc.get("amarelos", [0,0])[1]
+                    vermelhos_dict[eq1] += sc.get("vermelhos", [0,0])[0]
+                    vermelhos_dict[eq2] += sc.get("vermelhos", [0,0])[1]
+            
+            df_analytics["Amarelos"] = df_analytics["Equipa"].map(amarelos_dict)
+            df_analytics["Vermelhos"] = df_analytics["Equipa"].map(vermelhos_dict)
+            
+            # Filtro interativo de métricas
+            opcoes_metricas = {
+                "Golos Marcados (GM)": "GM",
+                "Remates Totais Efetuados": "Remates",
+                "Cantos Conquistados": "Cantos",
+                "Total de Vitórias (V)": "V",
+                "Cartões Amarelos Acumulados": "Amarelos",
+                "Cartões Vermelhos Acumulados": "Vermelhos"
+            }
+            
+            metrica_selecionada = st.selectbox("Selecione a métrica coletiva que deseja visualizar no gráfico:", list(opcoes_metricas.keys()))
+            coluna_alvo = opcoes_metricas[metrica_selecionada]
+            
+            # Renderização do Gráfico do Plotly
+            df_ordenado = df_analytics.sort_values(by=coluna_alvo, ascending=False)
+            
+            fig = px.bar(
+                df_ordenado, 
+                x="Equipa", 
+                y=coluna_alvo, 
+                color="Equipa",
+                title=f"Comparativa Geral das Equipas: {metrica_selecionada}",
+                labels={"Equipa": "Seleção Nacional", coluna_alvo: "Total Acumulado"},
+                color_discrete_sequence=px.colors.qualitative.Dark24
+            )
+            
+            fig.update_layout(showlegend=False, font_family="sans-serif", title_font_size=18)
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Exibir resumo em mini cartões estatísticos
+            st.markdown("##### 📌 Líderes da Métrica Selecionada")
+            if not df_ordenado.empty:
+                lider_nome = df_ordenado.iloc[0]["Equipa"]
+                lider_valor = df_ordenado.iloc[0][coluna_alvo]
+                st.write(f"A seleção mais destacada em **{metrica_selecionada}** é **{lider_nome}** com um total de **{lider_valor}**.")
