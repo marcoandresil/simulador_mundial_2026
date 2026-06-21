@@ -261,7 +261,7 @@ with centro:
             }
             
             dados_raiz["jogos"].append({
-                "id_jogo": jogo_atual["id_jogo"], "fase": jogo_atual["fase"], "equipas": [eq1, eq2], "resultado": res_final,
+                "id_jogo": Urban_atual := jogo_atual["id_jogo"], "fase": jogo_atual["fase"], "equipas": [eq1, eq2], "resultado": res_final,
                 "estatisticas_coletivas": stats_coletivas, "estatisticas_jogadores": stats_j1 + stats_j2
             })
             dados_raiz["proximo_jogo_index"] += 1
@@ -389,7 +389,7 @@ with centro:
                 renderizar_barra_sofascore("Cantos", cnt1, cnt2)
                 renderizar_barra_sofascore("Passes", pct_p1, pct_p2, f"{pct_p1}% ({p_det[0][0]}/{p_det[0][1]})", f"{pct_p2}% ({p_det[1][0]}/{p_det[1][1]})")
                 renderizar_barra_sofascore("Cartões amarelos", yel1, yel2)
-                renderizar_barra_sofascore("Cartões vermelhos", red1, red2)
+                renderizar_barra_sofascore("Cartões vermelios", red1, red2)
 
                 st.markdown("---")
                 col_det1, col_det2 = st.columns(2)
@@ -450,22 +450,39 @@ with centro:
                 "Cartões Vermelhos Acumulados": "Vermelhos"
             }
             
-            metrica_selecionada = st.selectbox("Selecione a métrica coletiva que deseja visualizar no gráfico:", list(opcoes_metricas.keys()))
+            # --- SELETORES DINÂMICOS NA MESMA LINHA ---
+            col_sel1, col_sel2 = st.columns(2)
+            with col_sel1:
+                metrica_selecionada = st.selectbox("Selecione a métrica coletiva:", list(opcoes_metricas.keys()))
+            with col_sel2:
+                tipo_grafico = st.selectbox("Escolha o formato do gráfico:", ["Barras", "Linhas", "Pizza / Tarte"])
+                
             coluna_alvo = opcoes_metricas[metrica_selecionada]
-            
             df_ordenado = df_analytics.sort_values(by=coluna_alvo, ascending=False)
             
-            fig = px.bar(
-                df_ordenado, 
-                x="Equipa", 
-                y=coluna_alvo, 
-                color="Equipa",
-                title=f"Comparativa Geral das Equipas: {metrica_selecionada}",
-                labels={"Equipa": "Seleção Nacional", coluna_alvo: "Total Acumulado"},
-                color_discrete_sequence=px.colors.qualitative.Dark24
-            )
+            # --- RENDERIZAÇÃO ADAPTATIVA DO PLOTLY ---
+            if tipo_grafico == "Barras":
+                fig = px.bar(
+                    df_ordenado, x="Equipa", y=coluna_alvo, color="Equipa",
+                    title=f"Comparativa Geral: {metrica_selecionada}",
+                    labels={"Equipa": "Seleção", coluna_alvo: "Total Acumulado"},
+                    color_discrete_sequence=px.colors.qualitative.Dark24
+                )
+            elif tipo_grafico == "Linhas":
+                fig = px.line(
+                    df_ordenado, x="Equipa", y=coluna_alvo, markers=True,
+                    title=f"Evolução/Tendência Comparativa: {metrica_selecionada}",
+                    labels={"Equipa": "Seleção", coluna_alvo: "Total Acumulado"},
+                )
+                fig.update_traces(line_color='#ff4b4b', line_width=3, marker=dict(size=10))
+            else:
+                fig = px.pie(
+                    df_ordenado, names="Equipa", values=coluna_alvo,
+                    title=f"Distribuição Percentual: {metrica_selecionada}",
+                    color_discrete_sequence=px.colors.qualitative.Pastel
+                )
             
-            fig.update_layout(showlegend=False, font_family="sans-serif", title_font_size=18)
+            fig.update_layout(showlegend=True if tipo_grafico == "Pizza / Tarte" else False, font_family="sans-serif", title_font_size=18)
             st.plotly_chart(fig, use_container_width=True)
             
             st.markdown("##### 📌 Líderes da Métrica Selecionada")
