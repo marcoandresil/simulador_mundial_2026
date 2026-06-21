@@ -78,7 +78,7 @@ def simular_metricas_jogador(nome, posicao, equipa):
 
 def obter_classificacao_com_zeros(dados_torneio, grupos_ativos):
     stats_equipas = {}
-    for grupo, lista_eq in grupos_ativos.items():
+    for group, lista_eq in grupos_ativos.items():
         for eq in lista_eq:
             stats_equipas[eq] = {
                 "Equipa": eq, "P": 0, "J": 0, "V": 0, "E": 0, "D": 0,
@@ -337,88 +337,131 @@ with centro:
 
     with aba_jogos:
         lista_r = dados_raiz.get("jogos", [])
-        if not lista_r: st.info("Nenhum jogo realizado.")
+        calendario_completo = dados_raiz.get("jogos_calendario", [])
+        
+        if not calendario_completo: 
+            st.info("Nenhum jogo agendado ou realizado.")
         else:
-            opc = {f"{j['fase']}: {j['equipas'][0]} {j['resultado']} {j['equipas'][1]}": j for j in lista_r}
-            j_e = st.selectbox("Selecione a partida para ver os detalhes:", list(opc.keys()))
-            j_d = opc[j_e]
-            eq1, eq2 = j_d['equipas'][0], j_d['equipas'][1]
-            st.markdown(f"### 🏟️ {eq1} vs {eq2}")
-            st.caption(f"Fase do Torneio: {j_d['fase']} | Resultado Final: **{j_d['resultado']}**")
+            opcoes_jogos = []
+            jogos_mapeados = {j["id_jogo"]: j for j in lista_r}
             
-            sc = j_d.get("estatisticas_coletivas", {})
-            if sc:
-                st.markdown("#### **Principais**")
-                def renderizar_barra_sofascore(label, val1, val2, txt1=None, txt2=None):
-                    v1, v2 = float(val1), float(val2)
-                    total = v1 + v2 if (v1 + v2) > 0 else 1
+            for j_cal in calendario_completo:
+                id_j = j_cal["id_jogo"]
+                eq1, eq2 = j_cal["equipas"][0], j_cal["equipas"][1]
+                fase = j_cal["fase"]
+                
+                if id_j in jogos_mapeados:
+                    res = jogos_mapeados[id_j]["resultado"]
+                    texto_opcao = f"{fase}: {eq1} {res} {eq2}"
+                else:
+                    texto_opcao = f"{fase}: {eq1} VS {eq2} (Agendado)"
+                
+                opcoes_jogos.append((texto_opcao, j_cal, id_j in jogos_mapeados))
+            
+            j_selecionado_texto = st.selectbox("Selecione a partida para ver os detalhes:", [o[0] for o in opcoes_jogos])
+            
+            idx_escolhido = [o[0] for o in opcoes_jogos].index(j_selecionado_texto)
+            _, jogo_info, foi_realizado = opcoes_jogos[idx_escolhido]
+            
+            eq1, eq2 = jogo_info['equipas'][0], jogo_info['equipas'][1]
+            st.markdown(f"### 🏟️ {eq1} vs {eq2}")
+            
+            if foi_realizado:
+                j_d = jogos_mapeados[jogo_info["id_jogo"]]
+                st.caption(f"Fase do Torneio: {j_d['fase']} | Resultado Final: **{j_d['resultado']}**")
+                sc = j_d.get("estatisticas_coletivas", {})
+                jogadores_partida = j_d.get("estatisticas_jogadores", [])
+            else:
+                st.caption(f"Fase do Torneio: {jogo_info['fase']} | ⏳ **Partida ainda não realizada**")
+                sc = {
+                    "xg": [0.0, 0.0], "posse": [0, 0], "remates_totais": [0, 0],
+                    "remates_baliza": [0, 0], "grandes_oportunidades": [0, 0], "cantos": [0, 0],
+                    "passes_detalhe": [[0, 0], [0, 0]], "amarelos": [0, 0], "vermelhos": [0, 0]
+                }
+                jogadores_partida = []
+            
+            st.markdown("#### **Principais**")
+            def renderizar_barra_sofascore(label, val1, val2, txt1=None, txt2=None):
+                v1, v2 = float(val1), float(val2)
+                total = v1 + v2
+                
+                if total == 0:
+                    pct1, pct2 = 50.0, 50.0
+                    cor1, cor2 = "#e2e8f0", "#e2e8f0"
+                else:
                     pct1, pct2 = (v1 / total) * 100, (v2 / total) * 100
-                    t1 = str(val1) if txt1 is None else txt1
-                    t2 = str(val2) if txt2 is None else txt2
                     cor1 = "#ff4b4b" if v1 >= v2 else "#1e293b"
                     cor2 = "#ff4b4b" if v2 >= v1 else "#1e293b"
-                    st.markdown(f"""
-                    <div style="font-family: sans-serif; margin-bottom: 12px; width: 100%; max-width: 600px; margin: 0 auto; padding: 6px 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 14px;">
-                            <div style="font-weight: bold; color: #1e293b; min-width: 50px; text-align: left;">{t1}</div>
-                            <div style="font-weight: 600; color: #475569; text-align: center;">{label}</div>
-                            <div style="font-weight: bold; color: #1e293b; min-width: 50px; text-align: right;">{t2}</div>
-                        </div>
-                        <div style="display: flex; width: 100%; height: 6px; background-color: #f1f5f9; border-radius: 3px; overflow: hidden;">
-                            <div style="width: 50%; display: flex; justify-content: flex-end; border-right: 2px solid #fff;"><div style="width: {pct1}%; height: 100%; background-color: {cor1}; border-radius: 3px 0 0 3px;"></div></div>
-                            <div style="width: 50%; display: flex; justify-content: flex-start; border-left: 2px solid #fff;"><div style="width: {pct2}%; height: 100%; background-color: {cor2}; border-radius: 0 3px 3px 0;"></div></div>
-                        </div>
+                
+                t1 = str(val1) if txt1 is None else txt1
+                t2 = str(val2) if txt2 is None else txt2
+                
+                st.markdown(f"""
+                <div style="font-family: sans-serif; margin-bottom: 12px; width: 100%; max-width: 600px; margin: 0 auto; padding: 6px 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 14px;">
+                        <div style="font-weight: bold; color: #1e293b; min-width: 50px; text-align: left;">{t1}</div>
+                        <div style="font-weight: 600; color: #475569; text-align: center;">{label}</div>
+                        <div style="font-weight: bold; color: #1e293b; min-width: 50px; text-align: right;">{t2}</div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div style="display: flex; width: 100%; height: 6px; background-color: #f1f5f9; border-radius: 3px; overflow: hidden;">
+                        <div style="width: 50%; display: flex; justify-content: flex-end; border-right: 2px solid #fff;"><div style="width: {pct1}%; height: 100%; background-color: {cor1}; border-radius: 3px 0 0 3px;"></div></div>
+                        <div style="width: 50%; display: flex; justify-content: flex-start; border-left: 2px solid #fff;"><div style="width: {pct2}%; height: 100%; background-color: {cor2}; border-radius: 0 3px 3px 0;"></div></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
-                xg1, xg2 = sc.get("xg", [0.0, 0.0])[0], sc.get("xg", [0.0, 0.0])[1]
-                pos1, pos2 = sc.get("posse", [50, 50])[0], sc.get("posse", [50, 50])[1]
-                rem1, rem2 = sc.get("remates_totais", [0, 0])[0], sc.get("remates_totais", [0, 0])[1]
-                bal1, bal2 = sc.get("remates_baliza", [0, 0])[0], sc.get("remates_baliza", [0, 0])[1]
-                opp1, opp2 = sc.get("grandes_oportunidades", [0, 0])[0], sc.get("grandes_oportunidades", [0, 0])[1]
-                cnt1, cnt2 = sc.get("cantos", [0, 0])[0], sc.get("cantos", [0, 0])[1]
-                
-                p_det = sc.get("passes_detalhe", [[0,0], [0,0]])
-                pct_p1 = int((p_det[0][0] / p_det[0][1] * 100) if p_det[0][1] > 0 else 0)
-                pct_p2 = int((p_det[1][0] / p_det[1][1] * 100) if p_det[1][1] > 0 else 0)
-                
-                yel1, yel2 = sc.get("amarelos", [0, 0])[0], sc.get("amarelos", [0, 0])[1]
-                red1, red2 = sc.get("vermelhos", [0, 0])[0], sc.get("vermelhos", [0, 0])[1]
+            xg1, xg2 = sc.get("xg", [0.0, 0.0])[0], sc.get("xg", [0.0, 0.0])[1]
+            pos1, pos2 = sc.get("posse", [0, 0])[0], sc.get("posse", [0, 0])[1]
+            rem1, rem2 = sc.get("remates_totais", [0, 0])[0], sc.get("remates_totais", [0, 0])[1]
+            bal1, bal2 = sc.get("remates_baliza", [0, 0])[0], sc.get("remates_baliza", [0, 0])[1]
+            opp1, opp2 = sc.get("grandes_oportunidades", [0, 0])[0], sc.get("grandes_oportunidades", [0, 0])[1]
+            cnt1, cnt2 = sc.get("cantos", [0, 0])[0], sc.get("cantos", [0, 0])[1]
+            
+            p_det = sc.get("passes_detalhe", [[0,0], [0,0]])
+            pct_p1 = int((p_det[0][0] / p_det[0][1] * 100) if p_det[0][1] > 0 else 0)
+            pct_p2 = int((p_det[1][0] / p_det[1][1] * 100) if p_det[1][1] > 0 else 0)
+            
+            yel1, yel2 = sc.get("amarelos", [0, 0])[0], sc.get("amarelos", [0, 0])[1]
+            red1, red2 = sc.get("vermelhos", [0, 0])[0], sc.get("vermelhos", [0, 0])[1]
 
-                renderizar_barra_sofascore("Golos esperados (xG)", xg1, xg2, f"{xg1:.2f}", f"{xg2:.2f}")
-                renderizar_barra_sofascore("Posse de bola", pos1, pos2, f"{pos1}%", f"{pos2}%")
-                renderizar_barra_sofascore("Total remates", rem1, rem2)
-                renderizar_barra_sofascore("Remates à baliza", bal1, bal2)
-                renderizar_barra_sofascore("Grandes oportunidades", opp1, opp2)
-                renderizar_barra_sofascore("Cantos", cnt1, cnt2)
-                renderizar_barra_sofascore("Passes", pct_p1, pct_p2, f"{pct_p1}% ({p_det[0][0]}/{p_det[0][1]})", f"{pct_p2}% ({p_det[1][0]}/{p_det[1][1]})")
-                renderizar_barra_sofascore("Cartões amarelos", yel1, yel2)
-                renderizar_barra_sofascore("Cartões vermelhos", red1, red2)
+            renderizar_barra_sofascore("Golos esperados (xG)", xg1, xg2, f"{xg1:.2f}", f"{xg2:.2f}")
+            renderizar_barra_sofascore("Posse de bola", pos1, pos2, f"{pos1}%", f"{pos2}%")
+            renderizar_barra_sofascore("Total remates", rem1, rem2)
+            renderizar_barra_sofascore("Remates à baliza", bal1, bal2)
+            renderizar_barra_sofascore("Grandes oportunidades", opp1, opp2)
+            renderizar_barra_sofascore("Cantos", cnt1, cnt2)
+            renderizar_barra_sofascore("Passes", pct_p1, pct_p2, f"{pct_p1}% ({p_det[0][0]}/{p_det[0][1]})", f"{pct_p2}% ({p_det[1][0]}/{p_det[1][1]})")
+            renderizar_barra_sofascore("Cartões amarelos", yel1, yel2)
+            renderizar_barra_sofascore("Cartões vermelhos", red1, red2)
 
-                st.markdown("---")
-                col_det1, col_det2 = st.columns(2)
-                with col_det1:
-                    st.markdown("#### ⚽ Marcadores da Partida")
-                    jogadores_partida = j_d.get("estatisticas_jogadores", [])
+            st.markdown("---")
+            col_det1, col_det2 = st.columns(2)
+            with col_det1:
+                st.markdown("#### ⚽ Marcadores da Partida")
+                if not foi_realizado:
+                    st.write("*Partida agendada. Aguarda a simulação.*")
+                else:
                     marcadores_jogo_eq1 = [f"{p['nome']} ({random.randint(1,90)}')" for p in jogadores_partida if p["equipa"] == eq1 for _ in range(p["golos"])]
                     marcadores_jogo_eq2 = [f"{p['nome']} ({random.randint(1,90)}')" for p in jogadores_partida if p["equipa"] == eq2 for _ in range(p["golos"])]
-                    if not marcadores_jogo_eq1 and not marcadores_jogo_eq2: st.write("*Partida sem golos registados.*")
+                    if not marcadores_jogo_eq1 and not marcadores_jogo_eq2: 
+                        st.write("*Partida sem golos registados.*")
                     else:
                         if marcadores_jogo_eq1: st.markdown(f"**{eq1}:** " + ", ".join(marcadores_jogo_eq1))
                         if marcadores_jogo_eq2: st.markdown(f"**{eq2}:** " + ", ".join(marcadores_jogo_eq2))
 
-                with col_det2:
-                    st.markdown("#### 🌟 Homem do Jogo (MVP)")
-                    if jogadores_partida:
-                        mvp_jogador = max(jogadores_partida, key=lambda x: calcular_pontuacao_jogador(x))
-                        st.markdown(f"""
-                        <div style="background-color: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid #ff4b4b; font-family: sans-serif;">
-                            <span style="font-size: 16px; font-weight: bold; color: #0c2340;">🥇 {mvp_jogador['nome']}</span>
-                            <div style="font-size: 13px; color: #475569; margin-top: 3px;">🏃 Seleção: <b>{mvp_jogador['equipa']}</b> | Posição: <i>{mvp_jogador['posicao']}</i></div>
-                            <div style="font-size: 15px; font-weight: bold; color: #ff4b4b; margin-top: 5px;">⭐ Nota SofaScore: {calcular_pontuacao_jogador(mvp_jogador)} / 10.0</div>
-                        </div>
-                        """, unsafe_allow_html=True)
-            else: st.warning("Não foram encontradas métricas coletivas salvas.")
+            with col_det2:
+                st.markdown("#### 🌟 Homem do Jogo (MVP)")
+                if not foi_realizado:
+                    st.write("*Disponível após o fim do confronto.*")
+                elif jogadores_partida:
+                    mvp_jogador = max(jogadores_partida, key=lambda x: calcular_pontuacao_jogador(x))
+                    st.markdown(f"""
+                    <div style="background-color: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid #ff4b4b; font-family: sans-serif;">
+                        <span style="font-size: 16px; font-weight: bold; color: #0c2340;">🥇 {mvp_jogador['nome']}</span>
+                        <div style="font-size: 13px; color: #475569; margin-top: 3px;">🏃 Seleção: <b>{mvp_jogador['equipa']}</b> | Posição: <i>{mvp_jogador['posicao']}</i></div>
+                        <div style="font-size: 15px; font-weight: bold; color: #ff4b4b; margin-top: 5px;">⭐ Nota SofaScore: {calcular_pontuacao_jogador(mvp_jogador)} / 10.0</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
     with aba_analytics:
         st.header("📈 Gráficos Comparativos do Torneio")
@@ -454,7 +497,6 @@ with centro:
                 "Cartões Vermelhos Acumulados": "Vermelhos"
             }
             
-            # --- SELETORES DINÂMICOS NA MESMA LINHA ---
             col_sel1, col_sel2 = st.columns(2)
             with col_sel1:
                 metrica_selecionada = st.selectbox("Selecione a métrica coletiva:", list(opcoes_metricas.keys()))
@@ -464,7 +506,6 @@ with centro:
             coluna_alvo = opcoes_metricas[metrica_selecionada]
             df_ordenado = df_analytics.sort_values(by=coluna_alvo, ascending=False)
             
-            # --- RENDERIZAÇÃO ADAPTATIVA DO PLOTLY ---
             if tipo_grafico == "Barras":
                 fig = px.bar(
                     df_ordenado, x="Equipa", y=coluna_alvo, color="Equipa",
