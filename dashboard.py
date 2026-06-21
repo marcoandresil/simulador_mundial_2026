@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit st
 import plotly.express as px
 import json
 import random
@@ -194,7 +194,8 @@ with centro:
         venc_m1 = m1_jogo["equipas"][0] if g1_m1 >= g2_m1 else m1_jogo["equipas"][1]
         venc_m2 = m2_jogo["equipas"][0] if g1_m2 >= g2_m2 else m2_jogo["equipas"][1]
         
-        calendario.append({ "id_jogo": "F1", "fase": "Grande Final", "equipas": [venc_m1, venc_venc_m2] })
+        # CORREÇÃO EFETUADA: Variável ajustada de venc_venc_m2 para venc_m2
+        calendario.append({ "id_jogo": "F1", "fase": "Grande Final", "equipas": [venc_m1, venc_m2] })
         dados_raiz["jogos_calendario"] = calendario
         with open(caminho_json, 'w', encoding='utf-8') as f:
             json.dump(dados_raiz, f, indent=2, ensure_ascii=False)
@@ -278,7 +279,6 @@ with centro:
     st.markdown("---")
     dados_jogadores = carregar_dados_mundial(caminho_json)
 
-    # NOVO: Adicionada a aba "Análise Comparativa Avançada" na navegação principal
     aba_geral, aba_jogos, aba_analytics = st.tabs(["📊 Tabelas Classificativas & Rankings", "📜 Histórico de Jogos", "📈 Análise Comparativa Avançada"])
 
     with aba_geral:
@@ -371,110 +371,4 @@ with centro:
                 xg1, xg2 = sc.get("xg", [0.0, 0.0])[0], sc.get("xg", [0.0, 0.0])[1]
                 pos1, pos2 = sc.get("posse", [50, 50])[0], sc.get("posse", [50, 50])[1]
                 rem1, rem2 = sc.get("remates_totais", [0, 0])[0], sc.get("remates_totais", [0, 0])[1]
-                bal1, bal2 = sc.get("remates_baliza", [0, 0])[0], sc.get("remates_baliza", [0, 0])[1]
-                opp1, opp2 = sc.get("grandes_oportunidades", [0, 0])[0], sc.get("grandes_oportunidades", [0, 0])[1]
-                cnt1, cnt2 = sc.get("cantos", [0, 0])[0], sc.get("cantos", [0, 0])[1]
-                p_det = sc.get("passes_detalhe", [[0,0], [0,0]])
-                pct_p1 = int((p_det[0][0] / p_det[0][1] * 100) if p_det[0][1] > 0 else 0)
-                pct_p2 = int((p_det[1][0] / p_det[1][1] * 100) if p_det[1][1] > 0 else 0)
-                yel1, yel2 = sc.get("amarelos", [0, 0])[0], sc.get("amarelos", [0, 0])[1]
-                red1, red2 = sc.get("vermelhos", [0, 0])[0], sc.get("vermelhos", [0, 0])[1]
-
-                renderizar_barra_sofascore("Golos esperados (xG)", xg1, xg2, f"{xg1:.2f}", f"{xg2:.2f}")
-                renderizar_barra_sofascore("Posse de bola", pos1, pos2, f"{pos1}%", f"{pos2}%")
-                renderizar_barra_sofascore("Total remates", rem1, rem2)
-                renderizar_barra_sofascore("Remates à baliza", bal1, bal2)
-                renderizar_barra_sofascore("Grandes oportunidades", opp1, opp2)
-                renderizar_barra_sofascore("Cantos", cnt1, cnt2)
-                renderizar_barra_sofascore("Passes", pct_p1, pct_p2, f"{pct_p1}% ({p_det[0][0]}/{p_det[0][1]})", f"{pct_p2}% ({p_det[1][0]}/{p_det[1][1]})")
-                renderizar_barra_sofascore("Cartões amarelos", yel1, yel2)
-                renderizar_barra_sofascore("Cartões vermelhos", red1, red2)
-
-                st.markdown("---")
-                col_det1, col_det2 = st.columns(2)
-                with col_det1:
-                    st.markdown("#### ⚽ Marcadores da Partida")
-                    jogadores_partida = j_d.get("estatisticas_jogadores", [])
-                    marcadores_jogo_eq1 = [f"{p['nome']} ({random.randint(1,90)}')" for p in jogadores_partida if p["equipa"] == eq1 for _ in range(p["golos"])]
-                    marcadores_jogo_eq2 = [f"{p['nome']} ({random.randint(1,90)}')" for p in jogadores_partida if p["equipa"] == eq2 for _ in range(p["golos"])]
-                    if not marcadores_jogo_eq1 and not marcadores_jogo_eq2: st.write("*Partida sem golos registados.*")
-                    else:
-                        if marcadores_jogo_eq1: st.markdown(f"**{eq1}:** " + ", ".join(marcadores_jogo_eq1))
-                        if marcadores_jogo_eq2: st.markdown(f"**{eq2}:** " + ", ".join(marcadores_jogo_eq2))
-
-                with col_det2:
-                    st.markdown("#### 🌟 Homem do Jogo (MVP)")
-                    if jogadores_partida:
-                        mvp_jogador = max(jogadores_partida, key=lambda x: calcular_pontuacao_jogador(x))
-                        st.markdown(f"""
-                        <div style="background-color: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid #ff4b4b; font-family: sans-serif;">
-                            <span style="font-size: 16px; font-weight: bold; color: #0c2340;">🥇 {mvp_jogador['nome']}</span>
-                            <div style="font-size: 13px; color: #475569; margin-top: 3px;">🏃 Seleção: <b>{mvp_jogador['equipa']}</b> | Posição: <i>{mvp_jogador['posicao']}</i></div>
-                            <div style="font-size: 15px; font-weight: bold; color: #ff4b4b; margin-top: 5px;">⭐ Nota SofaScore: {calcular_pontuacao_jogador(mvp_jogador)} / 10.0</div>
-                        </div>
-                        """, unsafe_allow_html=True)
-            else: st.warning("Não foram encontradas métricas coletivas salvas.")
-
-    # --- NOVA ABA: VISUALIZAÇÃO DE MÉTRICAS COMPARATIVAS ---
-    with aba_analytics:
-        st.header("📈 Gráficos Comparativos do Torneio")
-        st.markdown("Utiliza os seletores abaixo para cruzar dados e analisar as métricas de performance coletiva das seleções.")
-        
-        # Mapear dados das equipas acumulados através do data_parser
-        lista_stats_equipas = carregar_estatisticas_equipas(caminho_json)
-        
-        if not lista_stats_equipas:
-            st.info("Aguardando a realização de jogos para processar métricas comparativas.")
-        else:
-            df_analytics = pd.DataFrame(lista_stats_equipas)
-            
-            # Adicionar métrica agregada para cartões (extraída do histórico de jogos)
-            amarelos_dict = {eq: 0 for eq in pool_jogadores.keys()}
-            vermelhos_dict = {eq: 0 for eq in pool_jogadores.keys()}
-            for j in dados_raiz.get("jogos", []):
-                eq1, eq2 = j["equipas"][0], j["equipas"][1]
-                sc = j.get("estatisticas_coletivas", {})
-                if sc:
-                    amarelos_dict[eq1] += sc.get("amarelos", [0,0])[0]
-                    amarelos_dict[eq2] += sc.get("amarelos", [0,0])[1]
-                    vermelhos_dict[eq1] += sc.get("vermelhos", [0,0])[0]
-                    vermelhos_dict[eq2] += sc.get("vermelhos", [0,0])[1]
-            
-            df_analytics["Amarelos"] = df_analytics["Equipa"].map(amarelos_dict)
-            df_analytics["Vermelhos"] = df_analytics["Equipa"].map(vermelhos_dict)
-            
-            # Filtro interativo de métricas
-            opcoes_metricas = {
-                "Golos Marcados (GM)": "GM",
-                "Remates Totais Efetuados": "Remates",
-                "Cantos Conquistados": "Cantos",
-                "Total de Vitórias (V)": "V",
-                "Cartões Amarelos Acumulados": "Amarelos",
-                "Cartões Vermelhos Acumulados": "Vermelhos"
-            }
-            
-            metrica_selecionada = st.selectbox("Selecione a métrica coletiva que deseja visualizar no gráfico:", list(opcoes_metricas.keys()))
-            coluna_alvo = opcoes_metricas[metrica_selecionada]
-            
-            # Renderização do Gráfico do Plotly
-            df_ordenado = df_analytics.sort_values(by=coluna_alvo, ascending=False)
-            
-            fig = px.bar(
-                df_ordenado, 
-                x="Equipa", 
-                y=coluna_alvo, 
-                color="Equipa",
-                title=f"Comparativa Geral das Equipas: {metrica_selecionada}",
-                labels={"Equipa": "Seleção Nacional", coluna_alvo: "Total Acumulado"},
-                color_discrete_sequence=px.colors.qualitative.Dark24
-            )
-            
-            fig.update_layout(showlegend=False, font_family="sans-serif", title_font_size=18)
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Exibir resumo em mini cartões estatísticos
-            st.markdown("##### 📌 Líderes da Métrica Selecionada")
-            if not df_ordenado.empty:
-                lider_nome = df_ordenado.iloc[0]["Equipa"]
-                lider_valor = df_ordenado.iloc[0][coluna_alvo]
-                st.write(f"A seleção mais destacada em **{metrica_selecionada}** é **{lider_nome}** com um total de **{lider_valor}**.")
+                bal1, bal2 = sc.get("remates_baliza", [0, 0])[0], sc.get("remates_baliza",
