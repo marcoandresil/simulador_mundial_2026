@@ -8,10 +8,9 @@ import pandas as pd
 from data_parser import carregar_dados_mundial
 from stats import calcular_pontuacao_jogador
 
-# Configuração da página Web do Streamlit
-st.set_page_config(page_title="Simulador Mundial 2026", layout="wide")
+# Configuração da página Web do Streamlit com o novo nome
+st.set_page_config(page_title="Simulador Mundial 2026 - Analise de Dados", layout="wide")
 
-#caminho_json = "/mnt/c/Users/MarcoSil/OneDrive - QFree/Documents/Estudo/POS/DataAnalysis/dados_mundial.json"
 caminho_json = os.path.join(os.path.dirname(__file__), "dados_mundial.json")
 
 # Pool global de jogadores por seleção
@@ -98,21 +97,17 @@ if "inicializado" not in st.session_state:
     
     st.session_state["definicao_grupos"] = {"Grupo A": grupo_a, "Grupo B": grupo_b}
     
-    # Gerar todas as combinações de jogos para cada grupo
     comb_a = list(itertools.combinations(grupo_a, 2))
     comb_b = list(itertools.combinations(grupo_b, 2))
     
-    # CORREÇÃO: Intercalar os jogos sequencialmente (A1, B1, A2, B2...)
     jogos_fase_grupos = []
-    for idx in range(6):  # Cada grupo de 4 equipas gera exatamente 6 jogos
-        # Jogo do Grupo A
+    for idx in range(6):
         confronto_a = comb_a[idx]
         jogos_fase_grupos.append({
             "id_jogo": f"GA_{idx+1}", 
             "fase": f"Grupo A - Jogo {idx+1}", 
             "equipas": list(confronto_a)
         })
-        # Jogo do Grupo B
         confronto_b = comb_b[idx]
         jogos_fase_grupos.append({
             "id_jogo": f"GB_{idx+1}", 
@@ -137,12 +132,14 @@ dados_equipas = obter_classificacao_com_zeros(dados_raiz, definicao_grupos)
 margem_esq, centro, margem_dir = st.columns([1, 4, 1])
 
 with centro:
-    st.title("⚽ Central de Simulação: Grupos Aleatórios Pro")
+    # ALTERAÇÃO: Título principal do programa atualizado
+    st.title("⚽ Simulador Mundial 2026 - Analise de Dados")
 
+    # ALTERAÇÃO: Título atualizado no card de enquadramento académico
     st.markdown(
         """
         <div style="background-color: #f8f9fa; padding: 12px 20px; border-radius: 8px; border-left: 5px solid #0c2340; margin-bottom: 25px; font-family: sans-serif;">
-            <p style="margin: 0; font-size: 14px; color: #555; font-weight: 500;">📊 <b>Desenvolvido como projeto prático aplicado a Data Analysis</b></p>
+            <p style="margin: 0; font-size: 14px; color: #555; font-weight: 500;">📊 <b>Simulador Mundial 2026 - Analise de Dados</b></p>
             <p style="margin: 3px 0 0 0; font-size: 13px; color: #777;">🛡️ PGCibersegurança — Pós-Graduação em Cibersegurança | Universidade Lusófona</p>
         </div>
         """, 
@@ -218,7 +215,6 @@ with centro:
             html_marcadores_eq1 = f"<div style='font-size:12px; color:#555;'>{', '.join(marcadores_eq1)}</div>" if marcadores_eq1 else "<div style='font-size:12px; color:#aaa; font-style:italic;'>Sem golos</div>"
             html_marcadores_eq2 = f"<div style='font-size:12px; color:#555;'>{', '.join(marcadores_eq2)}</div>" if marcadores_eq2 else "<div style='font-size:12px; color:#aaa; font-style:italic;'>Sem golos</div>"
             
-            # REMOVIDO: Limpeza de bandeiras no resultado final
             st.session_state["ultimo_resultado_html"] = f"""
             <div style="background-color: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 16px; margin-bottom: 25px; font-family: sans-serif;">
                 <div style="text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; color: #718096; letter-spacing: 0.05em; margin-bottom: 8px;">📢 Resultado da Partida — {jogo_atual['fase']}</div>
@@ -311,7 +307,6 @@ with centro:
                 elif criterio == "Mais Assistências": ranking = sorted(ranking, key=lambda x: (x["Assistências"], x["Nota Média"]), reverse=True); m_k = "Assistências"; l_m = "Assists"
                 else: ranking = sorted(ranking, key=lambda x: x["Nota Média"], reverse=True); m_k = "Nota Média"; l_m = "Rating"
 
-                # REMOVIDO: Tabela HTML sem qualquer tag ou referência a bandeiras
                 html_tabela = '<div style="font-family: sans-serif; background-color: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; margin-top: 10px;">'
                 for index, jog in enumerate(ranking[:10]):
                     pos = index + 1
