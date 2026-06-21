@@ -8,7 +8,7 @@ import pandas as pd
 from data_parser import carregar_dados_mundial
 from stats import calcular_pontuacao_jogador
 
-# Configuração da página Web do Streamlit com o novo nome
+# Configuração da página Web do Streamlit
 st.set_page_config(page_title="Simulador Mundial 2026 - Analise de Dados", layout="wide")
 
 caminho_json = os.path.join(os.path.dirname(__file__), "dados_mundial.json")
@@ -28,8 +28,16 @@ pool_jogadores = {
 def simular_metricas_jogador(nome, posicao, equipa):
     is_avancado = posicao == "Avançado"
     is_defesa = posicao == "Defesa"
-    golos = random.choices([0, 1, 2], weights=[80, 18, 2])[0] if is_avancado else random.choices([0, 1], weights=[98, 2])[0]
-    assist = random.choices([0, 1], weights=[90, 10])[0]
+    
+    # MELHORIA: Ajuste de pesos para garantir mais golos no torneio e menos 0-0
+    if is_avancado:
+        golos = random.choices([0, 1, 2, 3], weights=[45, 43, 10, 2])[0]
+    elif posicao == "Médio":
+        golos = random.choices([0, 1, 2], weights=[75, 22, 3])[0]
+    else:
+        golos = random.choices([0, 1], weights=[95, 5])[0]
+        
+    assist = random.choices([0, 1, 2], weights=[75, 22, 3])[0]
     cortes = random.randint(1, 4) if is_defesa else random.randint(0, 1)
     passes_t = random.randint(35, 65)
     passes_c = int(passes_t * random.uniform(0.60, 0.80))
@@ -132,10 +140,8 @@ dados_equipas = obter_classificacao_com_zeros(dados_raiz, definicao_grupos)
 margem_esq, centro, margem_dir = st.columns([1, 4, 1])
 
 with centro:
-    # ALTERAÇÃO: Título principal do programa atualizado
     st.title("⚽ Simulador Mundial 2026 - Analise de Dados")
 
-    # ALTERAÇÃO: Título atualizado no card de enquadramento académico
     st.markdown(
         """
         <div style="background-color: #f8f9fa; padding: 12px 20px; border-radius: 8px; border-left: 5px solid #0c2340; margin-bottom: 25px; font-family: sans-serif;">
@@ -203,9 +209,18 @@ with centro:
             t_g1 = sum(p["golos"] for p in stats_j1)
             t_g2 = sum(p["golos"] for p in stats_j2)
             
+            # CORREÇÃO DO BUG: Atribuir o golo de desempate dos Playoffs a um jogador real
             if idx_proximo >= 12 and t_g1 == t_g2:
-                if random.choice([True, False]): t_g1 += 1 
-                else: t_g2 += 1
+                if random.choice([True, False]):
+                    t_g1 += 1
+                    # Escolhe um jogador de ataque/médio da equipa 1 para dar o golo
+                    jogador_sortudo = random.choice([p for p in stats_j1 if p["posicao"] in ["Avançado", "Médio"]])
+                    jogador_sortudo["golos"] += 1
+                else:
+                    t_g2 += 1
+                    # Escolhe um jogador de ataque/médio da equipa 2 para dar o golo
+                    jogador_sortudo = random.choice([p for p in stats_j2 if p["posicao"] in ["Avançado", "Médio"]])
+                    jogador_sortudo["golos"] += 1
                 
             res_final = f"{t_g1}-{t_g2}"
             
