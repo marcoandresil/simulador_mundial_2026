@@ -130,7 +130,7 @@ if "inicializado" not in st.session_state:
     random.shuffle(selecoes)
     grupo_a = selecoes[:4]
     grupo_b = selecoes[4:]
-    st.session_state["definicao_grupos"] = {"Grupo A": grupo_a, "Grupo B": grupo_b}
+    st.session_state["definicao_grupos"] = {"Grupo A": group_a, "Grupo B": grupo_b}
     
     comb_a = list(itertools.combinations(grupo_a, 2))
     comb_b = list(itertools.combinations(grupo_b, 2))
@@ -200,6 +200,10 @@ with centro:
             json.dump(dados_raiz, f, indent=2, ensure_ascii=False)
         st.rerun()
 
+    # Leitura global dos dados dos jogadores para o encerramento
+    dados_jogadores = carregar_dados_mundial(caminho_json)
+
+    # --- CONTROLO DO BOTÃO DE SIMULAÇÃO / ENCERRAMENTO ---
     if idx_proximo < len(calendario):
         jogo_atual = calendario[idx_proximo]
         st.markdown(f"""
@@ -261,27 +265,57 @@ with centro:
             }
             
             dados_raiz["jogos"].append({
-                "id_jogo": jogo_atual["id_jogo"], 
-                "fase": jogo_atual["fase"], 
-                "equipas": [eq1, eq2], 
-                "resultado": res_final,
-                "estatisticas_coletivas": stats_coletivas, 
-                "estatisticas_jogadores": stats_j1 + stats_j2
+                "id_jogo": jogo_atual["id_jogo"], "fase": jogo_atual["fase"], "equipas": [eq1, eq2], "resultado": res_final,
+                "estatisticas_coletivas": stats_coletivas, "estatisticas_jogadores": stats_j1 + stats_j2
             })
             dados_raiz["proximo_jogo_index"] += 1
             with open(caminho_json, 'w', encoding='utf-8') as f:
                 json.dump(dados_raiz, f, indent=2, ensure_ascii=False)
             st.rerun()
     else:
-        st.success("🏆 O Torneio terminou! Temos um Campeão Mundial!")
+        # --- ALTERAÇÃO: ANÚNCIO DE ENCERRAMENTO DETALHADO (CAMPEÃO + MVP) ---
+        lista_final_jogos = dados_raiz.get("jogos", [])
+        jogo_final = next((j for j in lista_final_jogos if j["id_jogo"] == "F1"), None)
+        
+        campeao_nome = "Desconhecido"
+        if jogo_final:
+            gf_eq1, gf_eq2 = jogo_final["equipas"][0], jogo_final["equipas"][1]
+            gf_g1, gf_g2 = map(int, jogo_final["resultado"].split("-"))
+            campeao_nome = gf_eq1 if gf_g1 > gf_g2 else gf_eq2
+
+        # Calcular o MVP real do torneio completo (Maior nota média)
+        mvp_torneio_nome = "Ninguém"
+        mvp_torneio_nota = 0.0
+        mvp_torneio_equipa = ""
+        
+        if dados_jogadores:
+            for nome_j, st_j in dados_jogadores.items():
+                nota_m = calcular_pontuacao_jogador(st_j)
+                if nota_m > mvp_torneio_nota:
+                    mvp_torneio_nota = nota_m
+                    mvp_torneio_nome = nome_j
+                    mvp_torneio_equipa = st_j.get("equipa", "")
+
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, #0c2340 0%, #1e3a5f 100%); padding: 25px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); text-align: center; color: white; margin-bottom: 25px; font-family: sans-serif;">
+            <h2 style="margin: 0; color: #f59e0b; font-size: 28px;">🏆 O TORNEIO TERMINOU! 🏆</h2>
+            <p style="font-size: 22px; margin: 12px 0 5px 0; font-weight: bold; letter-spacing: 0.5px;">⭐ CAMPEÃO MUNDIAL: <span style="color: #34d399; font-size: 26px;">{campeao_nome}</span> ⭐</p>
+            <div style="background-color: rgba(255,255,255,0.1); max-width: 550px; margin: 15px auto 0 auto; padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">
+                <p style="margin: 0; font-size: 14px; text-transform: uppercase; color: #cbd5e1; font-weight: bold; letter-spacing: 0.05em;">🥇 Melhor Jogador do Torneio (MVP)</p>
+                <p style="margin: 4px 0 0 0; font-size: 19px; font-weight: bold; color: #f59e0b;">{mvp_torneio_nome} <span style="font-size: 14px; font-weight: normal; color: #e2e8f0;">({mvp_torneio_equipa})</span></p>
+                <p style="margin: 2px 0 0 0; font-size: 15px; font-weight: bold; color: #34d399;">Nota Média SofaScore: {mvp_torneio_nota} / 10.0</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
         if st.button("🔄 Sorteador Pro: Novo Torneio e Grupos Sequenciais"):
             if "inicializado" in st.session_state: del st.session_state["inicializado"]
             if "ultimo_resultado_html" in st.session_state: del st.session_state["ultimo_resultado_html"]
             st.rerun()
 
     st.markdown("---")
-    dados_jogadores = carregar_dados_mundial(caminho_json)
 
+    # --- LISTAGEM DAS ABAS ---
     aba_geral, aba_jogos, aba_analytics = st.tabs(["📊 Tabelas Classificativas & Rankings", "📜 Histórico de Jogos", "📈 Análise Comparativa Avançada"])
 
     with aba_geral:
@@ -342,7 +376,7 @@ with centro:
         if not calendario_completo: 
             st.info("Nenhum jogo agendado ou realizado.")
         else:
-            opcoes_jogos = []
+            opces_jogos = []
             jogos_mapeados = {j["id_jogo"]: j for j in lista_r}
             
             for j_cal in calendario_completo:
@@ -356,12 +390,12 @@ with centro:
                 else:
                     texto_opcao = f"{fase}: {eq1} VS {eq2} (Agendado)"
                 
-                opcoes_jogos.append((texto_opcao, j_cal, id_j in jogos_mapeados))
+                opces_jogos.append((texto_opcao, j_cal, id_j in jogos_mapeados))
             
-            j_selecionado_texto = st.selectbox("Selecione a partida para ver os detalhes:", [o[0] for o in opcoes_jogos])
+            j_selecionado_texto = st.selectbox("Selecione a partida para ver os detalhes:", [o[0] for o in opces_jogos])
             
-            idx_escolhido = [o[0] for o in opcoes_jogos].index(j_selecionado_texto)
-            _, jogo_info, foi_realizado = opcoes_jogos[idx_escolhido]
+            idx_escolhido = [o[0] for o in opces_jogos].index(j_selecionado_texto)
+            _, jogo_info, foi_realizado = opces_jogos[idx_escolhido]
             
             eq1, eq2 = jogo_info['equipas'][0], jogo_info['equipas'][1]
             st.markdown(f"### 🏟️ {eq1} vs {eq2}")
@@ -468,13 +502,9 @@ with centro:
         st.markdown("Utiliza os seletores abaixo para cruzar dados e analisar as métricas de performance coletiva das seleções.")
         
         lista_stats_equipas = carregar_estatisticas_equipas(caminho_json)
-        
-        # MELHORIA ANALÍTICA: Criar dicionários base com todas as 8 seleções para garantir que aparecem sempre a 0
         todas_selecoes = list(pool_jogadores.keys())
-        
         equipas_com_dados = {e["Equipa"]: e for e in lista_stats_equipas} if lista_stats_equipas else {}
         
-        # Reconstruir lista estruturada garantindo a indexação a zero de quem não jogou
         dados_completos_equipas = []
         for eq in todas_selecoes:
             if eq in equipas_com_dados:
@@ -521,15 +551,15 @@ with centro:
         if tipo_grafico == "Barras":
             fig = px.bar(
                 df_ordenado, x="Equipa", y=coluna_alvo, color="Equipa",
-                title=f"Comparativa Geral das Equipas: {metrica_selecionada}",
-                labels={"Equipa": "Seleção Nacional", coluna_alvo: "Total Acumulado"},
+                title=f"Comparativa Geral: {metrica_selecionada}",
+                labels={"Equipa": "Seleção", coluna_alvo: "Total Acumulado"},
                 color_discrete_sequence=px.colors.qualitative.Dark24
             )
         elif tipo_grafico == "Linhas":
             fig = px.line(
                 df_ordenado, x="Equipa", y=coluna_alvo, markers=True,
                 title=f"Evolução/Tendência Comparativa: {metrica_selecionada}",
-                labels={"Equipa": "Seleção Nacional", coluna_alvo: "Total Acumulado"},
+                labels={"Equipa": "Seleção", coluna_alvo: "Total Acumulado"},
             )
             fig.update_traces(line_color='#ff4b4b', line_width=3, marker=dict(size=10))
         else:
