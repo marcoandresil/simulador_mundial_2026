@@ -469,69 +469,81 @@ with centro:
         
         lista_stats_equipas = carregar_estatisticas_equipas(caminho_json)
         
-        if not lista_stats_equipas:
-            st.info("Aguardando a realização de jogos para processar métricas comparativas.")
-        else:
-            df_analytics = pd.DataFrame(lista_stats_equipas)
-            
-            amarelos_dict = {eq: 0 for eq in pool_jogadores.keys()}
-            vermelhos_dict = {eq: 0 for eq in pool_jogadores.keys()}
-            for j in dados_raiz.get("jogos", []):
-                eq1, eq2 = j["equipas"][0], j["equipas"][1]
-                sc = j.get("estatisticas_coletivas", {})
-                if sc:
-                    amarelos_dict[eq1] += sc.get("amarelos", [0,0])[0]
-                    amarelos_dict[eq2] += sc.get("amarelos", [0,0])[1]
-                    vermelhos_dict[eq1] += sc.get("vermelhos", [0,0])[0]
-                    vermelhos_dict[eq2] += sc.get("vermelhos", [0,0])[1]
-            
-            df_analytics["Amarelos"] = df_analytics["Equipa"].map(amarelos_dict)
-            df_analytics["Vermelhos"] = df_analytics["Equipa"].map(vermelhos_dict)
-            
-            opcoes_metricas = {
-                "Golos Marcados (GM)": "GM",
-                "Remates Totais Efetuados": "Remates",
-                "Cantos Conquistados": "Cantos",
-                "Total de Vitórias (V)": "V",
-                "Cartões Amarelos Acumulados": "Amarelos",
-                "Cartões Vermelhos Acumulados": "Vermelhos"
-            }
-            
-            col_sel1, col_sel2 = st.columns(2)
-            with col_sel1:
-                metrica_selecionada = st.selectbox("Selecione a métrica coletiva:", list(opcoes_metricas.keys()))
-            with col_sel2:
-                tipo_grafico = st.selectbox("Escolha o formato do gráfico:", ["Barras", "Linhas", "Pizza / Tarte"])
-                
-            coluna_alvo = opcoes_metricas[metrica_selecionada]
-            df_ordenado = df_analytics.sort_values(by=coluna_alvo, ascending=False)
-            
-            if tipo_grafico == "Barras":
-                fig = px.bar(
-                    df_ordenado, x="Equipa", y=coluna_alvo, color="Equipa",
-                    title=f"Comparativa Geral: {metrica_selecionada}",
-                    labels={"Equipa": "Seleção", coluna_alvo: "Total Acumulado"},
-                    color_discrete_sequence=px.colors.qualitative.Dark24
-                )
-            elif tipo_grafico == "Linhas":
-                fig = px.line(
-                    df_ordenado, x="Equipa", y=coluna_alvo, markers=True,
-                    title=f"Evolução/Tendência Comparativa: {metrica_selecionada}",
-                    labels={"Equipa": "Seleção", coluna_alvo: "Total Acumulado"},
-                )
-                fig.update_traces(line_color='#ff4b4b', line_width=3, marker=dict(size=10))
+        # MELHORIA ANALÍTICA: Criar dicionários base com todas as 8 seleções para garantir que aparecem sempre a 0
+        todas_selecoes = list(pool_jogadores.keys())
+        
+        equipas_com_dados = {e["Equipa"]: e for e in lista_stats_equipas} if lista_stats_equipas else {}
+        
+        # Reconstruir lista estruturada garantindo a indexação a zero de quem não jogou
+        dados_completos_equipas = []
+        for eq in todas_selecoes:
+            if eq in equipas_com_dados:
+                dados_completos_equipas.append(equipas_com_dados[eq])
             else:
-                fig = px.pie(
-                    df_ordenado, names="Equipa", values=coluna_alvo,
-                    title=f"Distribuição Percentual: {metrica_selecionada}",
-                    color_discrete_sequence=px.colors.qualitative.Pastel
-                )
+                dados_completos_equipas.append({
+                    "Equipa": eq, "P": 0, "J": 0, "V": 0, "E": 0, "D": 0, "GM": 0, "GS": 0, "DG": 0, "Remates": 0, "Cantos": 0
+                })
+        
+        df_analytics = pd.DataFrame(dados_completos_equipas)
+        
+        amarelos_dict = {eq: 0 for eq in todas_selecoes}
+        vermelhos_dict = {eq: 0 for eq in todas_selecoes}
+        for j in dados_raiz.get("jogos", []):
+            eq1, eq2 = j["equipas"][0], j["equipas"][1]
+            sc = j.get("estatisticas_coletivas", {})
+            if sc:
+                amarelos_dict[eq1] += sc.get("amarelos", [0,0])[0]
+                amarelos_dict[eq2] += sc.get("amarelos", [0,0])[1]
+                vermelhos_dict[eq1] += sc.get("vermelhos", [0,0])[0]
+                vermelhos_dict[eq2] += sc.get("vermelhos", [0,0])[1]
+        
+        df_analytics["Amarelos"] = df_analytics["Equipa"].map(amarelos_dict)
+        df_analytics["Vermelhos"] = df_analytics["Equipa"].map(vermelhos_dict)
+        
+        opcoes_metricas = {
+            "Golos Marcados (GM)": "GM",
+            "Remates Totais Efetuados": "Remates",
+            "Cantos Conquistados": "Cantos",
+            "Total de Vitórias (V)": "V",
+            "Cartões Amarelos Acumulados": "Amarelos",
+            "Cartões Vermelhos Acumulados": "Vermelhos"
+        }
+        
+        col_sel1, col_sel2 = st.columns(2)
+        with col_sel1:
+            metrica_selecionada = st.selectbox("Selecione a métrica coletiva:", list(opcoes_metricas.keys()))
+        with col_sel2:
+            tipo_grafico = st.selectbox("Escolha o formato do gráfico:", ["Barras", "Linhas", "Pizza / Tarte"])
             
-            fig.update_layout(showlegend=True if tipo_grafico == "Pizza / Tarte" else False, font_family="sans-serif", title_font_size=18)
-            st.plotly_chart(fig, use_container_width=True)
-            
-            st.markdown("##### 📌 Líderes da Métrica Selecionada")
-            if not df_ordenado.empty:
-                lider_nome = df_ordenado.iloc[0]["Equipa"]
-                lider_valor = df_ordenado.iloc[0][coluna_alvo]
-                st.write(f"A seleção mais destacada em **{metrica_selecionada}** é **{lider_nome}** com um total de **{lider_valor}**.")
+        coluna_alvo = opcoes_metricas[metrica_selecionada]
+        df_ordenado = df_analytics.sort_values(by=coluna_alvo, ascending=False)
+        
+        if tipo_grafico == "Barras":
+            fig = px.bar(
+                df_ordenado, x="Equipa", y=coluna_alvo, color="Equipa",
+                title=f"Comparativa Geral das Equipas: {metrica_selecionada}",
+                labels={"Equipa": "Seleção Nacional", coluna_alvo: "Total Acumulado"},
+                color_discrete_sequence=px.colors.qualitative.Dark24
+            )
+        elif tipo_grafico == "Linhas":
+            fig = px.line(
+                df_ordenado, x="Equipa", y=coluna_alvo, markers=True,
+                title=f"Evolução/Tendência Comparativa: {metrica_selecionada}",
+                labels={"Equipa": "Seleção Nacional", coluna_alvo: "Total Acumulado"},
+            )
+            fig.update_traces(line_color='#ff4b4b', line_width=3, marker=dict(size=10))
+        else:
+            fig = px.pie(
+                df_ordenado, names="Equipa", values=coluna_alvo,
+                title=f"Distribuição Percentual: {metrica_selecionada}",
+                color_discrete_sequence=px.colors.qualitative.Pastel
+            )
+        
+        fig.update_layout(showlegend=True if tipo_grafico == "Pizza / Tarte" else False, font_family="sans-serif", title_font_size=18)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        st.markdown("##### 📌 Líderes da Métrica Selecionada")
+        if not df_ordenado.empty:
+            lider_nome = df_ordenado.iloc[0]["Equipa"]
+            lider_valor = df_ordenado.iloc[0][coluna_alvo]
+            st.write(f"A seleção mais destacada em **{metrica_selecionada}** é **{lider_nome}** com um total de **{lider_valor}**.")
