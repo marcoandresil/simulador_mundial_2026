@@ -8,16 +8,16 @@ def carregar_dados_mundial(caminho_ficheiro):
 
     with open(caminho_ficheiro, 'r', encoding='utf-8') as f:
         dados_json = json.load(f)
-    
+
     dados_consolidados = {}
 
     for jogo in dados_json.get("jogos", []):
         for jog in jogo.get("estatisticas_jogadores", []):
             nome = jog["nome"]
-            
+
             duelos_g = jog["duelos"]["solo_ganhos"] + jog["duelos"]["aereos_ganhos"]
             duelos_t = jog["duelos"]["solo_totais"] + jog["duelos"]["aereos_totais"]
-            
+
             if nome in dados_consolidados:
                 dados_consolidados[nome]["jogos_disputados"] += 1
                 dados_consolidados[nome]["minutos_jogados"] += jog["minutos_jogados"]
@@ -28,6 +28,14 @@ def carregar_dados_mundial(caminho_ficheiro):
                 dados_consolidados[nome]["passes_totais"] += jog["passes"]["totais"]
                 dados_consolidados[nome]["duelos_ganhos"] += duelos_g
                 dados_consolidados[nome]["duelos_totais"] += duelos_t
+                
+                # --- NOVAS MÉTRICAS ACUMULADAS ---
+                dados_consolidados[nome]["remates_totais"] += jog.get("remates_totais", 0)
+                dados_consolidados[nome]["remates_baliza"] += jog.get("remates_baliza", 0)
+                dados_consolidados[nome]["passes_decisivos"] += jog.get("passes_decisivos", 0)
+                dados_consolidados[nome]["intercecoes"] += jog.get("intercecoes", 0)
+                dados_consolidados[nome]["alivios"] += jog.get("alivios", 0)
+                dados_consolidados[nome]["faltas_cometidas"] += jog.get("faltas_cometidas", 0)
             else:
                 dados_consolidados[nome] = {
                     "posicao": jog["posicao"],
@@ -40,9 +48,17 @@ def carregar_dados_mundial(caminho_ficheiro):
                     "passes_completos": jog["passes"]["completos"],
                     "passes_totais": jog["passes"]["totais"],
                     "duelos_ganhos": duelos_g,
-                    "duelos_totais": duelos_t
+                    "duelos_totais": duelos_t,
+                    
+                    # --- NOVAS MÉTRICAS INICIALIZADAS ---
+                    "remates_totais": jog.get("remates_totais", 0),
+                    "remates_baliza": jog.get("remates_baliza", 0),
+                    "passes_decisivos": jog.get("passes_decisivos", 0),
+                    "intercecoes": jog.get("intercecoes", 0),
+                    "alivios": jog.get("alivios", 0),
+                    "faltas_cometidas": jog.get("faltas_cometidas", 0)
                 }
-            
+
     return dados_consolidados
 
 
@@ -53,7 +69,7 @@ def carregar_estatisticas_equipas(caminho_ficheiro):
 
     with open(caminho_ficheiro, 'r', encoding='utf-8') as f:
         dados_json = json.load(f)
-    
+
     equipas_consolidadas = {}
 
     for jogo in dados_json.get("jogos", []):
@@ -61,7 +77,6 @@ def carregar_estatisticas_equipas(caminho_ficheiro):
         golos_eq1, golos_eq2 = map(int, jogo["resultado"].split("-"))
         sc = jogo.get("estatisticas_coletivas", {})
 
-        # Inicializar chaves das equipas envolvidas se for a estreia delas no torneio
         for eq in [eq1, eq2]:
             if eq not in equipas_consolidadas:
                 equipas_consolidadas[eq] = {
@@ -69,7 +84,6 @@ def carregar_estatisticas_equipas(caminho_ficheiro):
                     "Golos Marcados": 0, "Golos Sofridos": 0, "Remates Totais": 0, "Cantos": 0
                 }
 
-        # Acumular dados da Equipa 1 (Casa)
         equipas_consolidadas[eq1]["Jogos"] += 1
         equipas_consolidadas[eq1]["Golos Marcados"] += golos_eq1
         equipas_consolidadas[eq1]["Golos Sofridos"] += golos_eq2
@@ -77,7 +91,6 @@ def carregar_estatisticas_equipas(caminho_ficheiro):
             equipas_consolidadas[eq1]["Remates Totais"] += sc["remates_totais"][0]
             equipas_consolidadas[eq1]["Cantos"] += sc["cantos"][0]
 
-        # Acumular dados da Equipa 2 (Fora)
         equipas_consolidadas[eq2]["Jogos"] += 1
         equipas_consolidadas[eq2]["Golos Marcados"] += golos_eq2
         equipas_consolidadas[eq2]["Golos Sofridos"] += golos_eq1
@@ -85,7 +98,6 @@ def carregar_estatisticas_equipas(caminho_ficheiro):
             equipas_consolidadas[eq2]["Remates Totais"] += sc["remates_totais"][1]
             equipas_consolidadas[eq2]["Cantos"] += sc["cantos"][1]
 
-        # Distribuir os resultados desportivos (Vitória/Empate/Derrota)
         if golos_eq1 > golos_eq2:
             equipas_consolidadas[eq1]["Vitórias"] += 1
             equipas_consolidadas[eq2]["Derrotas"] += 1
@@ -96,25 +108,16 @@ def carregar_estatisticas_equipas(caminho_ficheiro):
             equipas_consolidadas[eq1]["Empates"] += 1
             equipas_consolidadas[eq2]["Empates"] += 1
 
-    # Construir a estrutura de lista final estruturada para exibição no Streamlit DataFrame
     tabela_final = []
     for nome_eq, stats in equipas_consolidadas.items():
         pontos = (stats["Vitórias"] * 3) + stats["Empates"]
         diff_golos = stats["Golos Marcados"] - stats["Golos Sofridos"]
-        
+
         tabela_final.append({
-            "Equipa": nome_eq,
-            "P": pontos,
-            "J": stats["Jogos"],
-            "V": stats["Vitórias"],
-            "E": stats["Empates"],
-            "D": stats["Derrotas"],
-            "GM": stats["Golos Marcados"],
-            "GS": stats["Golos Sofridos"],
-            "DG": diff_golos,
-            "Remates": stats["Remates Totais"],
+            "Equipa": nome_eq, "P": pontos, "J": stats["Jogos"], "V": stats["Vitórias"],
+            "E": stats["Empates"], "D": stats["Derrotas"], "GM": stats["Golos Marcados"],
+            "GS": stats["Golos Sofridos"], "DG": diff_golos, "Remates": stats["Remates Totais"],
             "Cantos": stats["Cantos"]
         })
 
-    # Ordenação canónica: Pontos -> Diferença de Golos -> Golos Marcados
     return sorted(tabela_final, key=lambda x: (x["P"], x["DG"], x["GM"]), reverse=True)

@@ -5,11 +5,11 @@ import random
 import os
 import itertools
 import pandas as pd
-from data_parser import carregar_dados_mundial
+from data_parser import carregar_dados_mundial, carregar_estatisticas_equipas
 from stats import calcular_pontuacao_jogador
 
 # Configuração da página Web do Streamlit
-st.set_page_config(page_title="Simulador Mundial 2026 - Analise de Dados", layout="wide")
+st.set_page_config(page_title="Simulador Mundial 2026", layout="wide")
 
 caminho_json = os.path.join(os.path.dirname(__file__), "dados_mundial.json")
 
@@ -23,6 +23,18 @@ pool_jogadores = {
     "Argentina": [{"nome": "Lionel Messi", "posicao": "Avançado"}, {"nome": "Alexis Mac Allister", "posicao": "Médio"}, {"nome": "Cristian Romero", "posicao": "Defesa"}],
     "Uruguai": [{"nome": "Darwin Núñez", "posicao": "Avançado"}, {"nome": "Federico Valverde", "posicao": "Médio"}, {"nome": "Ronald Araújo", "posicao": "Defesa"}],
     "Alemanha": [{"nome": "Florian Wirtz", "posicao": "Avançado"}, {"nome": "Jamal Musiala", "posicao": "Médio"}, {"nome": "Antonio Rüdiger", "posicao": "Defesa"}]
+}
+
+# CORREÇÃO DEFINITIVA: Dicionário limpo apenas com emojis de texto puro para evitar erros de encoding no HTML
+bandeiras = {
+    "Portugal": "🇵🇹", 
+    "França": "🇫🇷", 
+    "Espanha": "🇪🇸", 
+    "Inglaterra": "🏴",
+    "Brasil": "🇧🇷", 
+    "Argentina": "🇦🇷", 
+    "Uruguai": "🇺🇺", 
+    "Alemanha": "🇩🇪"
 }
 
 def simular_metricas_jogador(nome, posicao, equipa):
@@ -41,60 +53,46 @@ def simular_metricas_jogador(nome, posicao, equipa):
     cortes = random.randint(1, 4) if is_defesa else random.randint(0, 1)
     passes_t = random.randint(35, 65)
     passes_c = int(passes_t * random.uniform(0.60, 0.80))
+    
+    # --- NOVAS MÉTRICAS INDIVIDUAIS RICAS PARA ANÁLISE DE DADOS ---
+    if is_avancado:
+        rem_totais = random.randint(1, 6)
+    elif posicao == "Médio":
+        rem_totais = random.randint(0, 3)
+    else:
+        rem_totais = random.choices([0, 1], weights=[90, 10])[0]
+        
+    rem_baliza = min(rem_totais, random.randint(0, 3) if is_avancado else random.randint(0, 1))
+    
+    if is_defesa:
+        # Posição defensiva tem mais interceções e alívios
+        intercep = random.randint(0, 4)
+        alivios = random.randint(1, 6)
+    elif posicao == "Médio":
+        intercep = random.randint(0, 3)
+        alivios = random.randint(0, 2)
+    else:
+        intercep = random.choices([0, 1], weights=[80, 20])[0]
+        alivios = random.choices([0, 1], weights=[90, 10])[0]
+        
+    p_decisivos = random.randint(0, 4) if posicao == "Médio" else random.randint(0, 2)
+    
+    faltas_cometidas = random.randint(0, 3) if is_defesa or posicao == "Médio" else random.randint(0, 1)
+
     return {
         "nome": nome, "posicao": posicao, "equipa": equipa, "minutos_jogados": 90,
         "golos": golos, "assistencias": assist, "cortes_ganhos": cortes,
         "passes": {"completos": passes_c, "totais": passes_t},
-        "duelos": {"solo_ganhos": random.randint(1, 3), "solo_totais": random.randint(6, 10), "aereos_ganhos": random.randint(0, 2), "aereos_totais": random.randint(4, 7)}
-    }
-
-def obter_classificacao_com_zeros(dados_torneio, grupos_ativos):
-    stats_equipas = {}
-    for grupo, lista_eq in grupos_ativos.items():
-        for eq in lista_eq:
-            stats_equipas[eq] = {
-                "Equipa": eq, "P": 0, "J": 0, "V": 0, "E": 0, "D": 0,
-                "GM": 0, "GS": 0, "DG": 0, "Remates": 0, "Cantos": 0
-            }
-    
-    for jogo in dados_torneio.get("jogos", []):
-        if "Grupo" in jogo["fase"]:
-            eq1, eq2 = jogo["equipas"][0], jogo["equipas"][1]
-            g1, g2 = map(int, jogo["resultado"].split("-"))
-            sc = jogo.get("estatisticas_coletivas", {})
-            
-            stats_equipas[eq1]["J"] += 1
-            stats_equipas[eq2]["J"] += 1
-            stats_equipas[eq1]["GM"] += g1
-            stats_equipas[eq1]["GS"] += g2
-            stats_equipas[eq2]["GM"] += g2
-            stats_equipas[eq2]["GS"] += g1
-            
-            if "remates_totais" in sc:
-                stats_equipas[eq1]["Remates"] += sc["remates_totais"][0]
-                stats_equipas[eq2]["Remates"] += sc["remates_totais"][1]
-            if "cantos" in sc:
-                stats_equipas[eq1]["Cantos"] += sc["cantos"][0]
-                stats_equipas[eq2]["Cantos"] += sc["cantos"][1]
-                
-            if g1 > g2:
-                stats_equipas[eq1]["P"] += 3
-                stats_equipas[eq1]["V"] += 1
-                stats_equipas[eq2]["D"] += 1
-            elif g2 > g1:
-                stats_equipas[eq2]["P"] += 3
-                stats_equipas[eq2]["V"] += 1
-                stats_equipas[eq1]["D"] += 1
-            else:
-                stats_equipas[eq1]["P"] += 1
-                stats_equipas[eq2]["P"] += 1
-                stats_equipas[eq1]["E"] += 1
-                stats_equipas[eq2]["E"] += 1
-
-    for eq in stats_equipas:
-        stats_equipas[eq]["DG"] = stats_equipas[eq]["GM"] - stats_equipas[eq]["GS"]
+        "duelos": {"solo_ganhos": random.randint(1, 3), "solo_totais": random.randint(6, 10), "aereos_ganhos": random.randint(0, 2), "aereos_totais": random.randint(4, 7)},
         
-    return list(stats_equipas.values())
+        # INCLUSÃO DAS NOVAS MÉTRICAS RICAS
+        "remates_totais": rem_totais,
+        "remates_baliza": rem_baliza,
+        "passes_decisivos": p_decisivos,
+        "intercecoes": intercep,
+        "alivios": alivios,
+        "faltas_cometidas": faltas_cometidas
+    }
 
 # --- CONTROLADOR CENTRAL DE ARRANQUE ---
 if "inicializado" not in st.session_state:
@@ -105,17 +103,21 @@ if "inicializado" not in st.session_state:
     
     st.session_state["definicao_grupos"] = {"Grupo A": grupo_a, "Grupo B": grupo_b}
     
+    # Gerar todas as combinações de jogos para cada grupo
     comb_a = list(itertools.combinations(grupo_a, 2))
     comb_b = list(itertools.combinations(grupo_b, 2))
     
+    # CORREÇÃO: Intercalar os jogos sequencialmente (A1, B1, A2, B2...)
     jogos_fase_grupos = []
-    for idx in range(6):
+    for idx in range(6):  # Cada grupo de 4 equipas gera exatamente 6 jogos
+        # Jogo do Grupo A
         confronto_a = comb_a[idx]
         jogos_fase_grupos.append({
             "id_jogo": f"GA_{idx+1}", 
             "fase": f"Grupo A - Jogo {idx+1}", 
             "equipas": list(confronto_a)
         })
+        # Jogo do Grupo B
         confronto_b = comb_b[idx]
         jogos_fase_grupos.append({
             "id_jogo": f"GB_{idx+1}", 
@@ -140,12 +142,13 @@ dados_equipas = obter_classificacao_com_zeros(dados_raiz, definicao_grupos)
 margem_esq, centro, margem_dir = st.columns([1, 4, 1])
 
 with centro:
-    st.title("⚽ Simulador Mundial 2026 - Analise de Dados")
+    st.title("⚽ Central de Simulação: Grupos Aleatórios Pro")
 
+    # --- ENQUADRAMENTO ACADÉMICO NO INÍCIO ---
     st.markdown(
         """
         <div style="background-color: #f8f9fa; padding: 12px 20px; border-radius: 8px; border-left: 5px solid #0c2340; margin-bottom: 25px; font-family: sans-serif;">
-            <p style="margin: 0; font-size: 14px; color: #555; font-weight: 500;">📊 <b>Simulador Mundial 2026 - Analise de Dados</b></p>
+            <p style="margin: 0; font-size: 14px; color: #555; font-weight: 500;">📊 <b>Desenvolvido como projeto prático aplicado a Data Analysis</b></p>
             <p style="margin: 3px 0 0 0; font-size: 13px; color: #777;">🛡️ PGCibersegurança — Pós-Graduação em Cibersegurança | Universidade Lusófona</p>
         </div>
         """, 
@@ -230,6 +233,7 @@ with centro:
             html_marcadores_eq1 = f"<div style='font-size:12px; color:#555;'>{', '.join(marcadores_eq1)}</div>" if marcadores_eq1 else "<div style='font-size:12px; color:#aaa; font-style:italic;'>Sem golos</div>"
             html_marcadores_eq2 = f"<div style='font-size:12px; color:#555;'>{', '.join(marcadores_eq2)}</div>" if marcadores_eq2 else "<div style='font-size:12px; color:#aaa; font-style:italic;'>Sem golos</div>"
             
+            # REMOVIDO: Limpeza de bandeiras no resultado final
             st.session_state["ultimo_resultado_html"] = f"""
             <div style="background-color: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 16px; margin-bottom: 25px; font-family: sans-serif;">
                 <div style="text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; color: #718096; letter-spacing: 0.05em; margin-bottom: 8px;">📢 Resultado da Partida — {jogo_atual['fase']}</div>
@@ -322,6 +326,7 @@ with centro:
                 elif criterio == "Mais Assistências": ranking = sorted(ranking, key=lambda x: (x["Assistências"], x["Nota Média"]), reverse=True); m_k = "Assistências"; l_m = "Assists"
                 else: ranking = sorted(ranking, key=lambda x: x["Nota Média"], reverse=True); m_k = "Nota Média"; l_m = "Rating"
 
+                # REMOVIDO: Tabela HTML sem qualquer tag ou referência a bandeiras
                 html_tabela = '<div style="font-family: sans-serif; background-color: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; margin-top: 10px;">'
                 for index, jog in enumerate(ranking[:10]):
                     pos = index + 1
@@ -406,16 +411,4 @@ with centro:
                 txt_passes2 = f"{pct_p2}% <span style='font-size:10px; color:#94a3b8;'>({p_det[1][0]}/{p_det[1][1]})</span>"
                 
                 yel1, yel2 = sc.get("amarelos", [0, 0])[0], sc.get("amarelos", [0, 0])[1]
-                red1, red2 = sc.get("vermelhos", [0, 0])[0], sc.get("vermelhos", [0, 0])[1]
-
-                renderizar_barra_sofascore("Golos esperados (xG)", xg1, xg2, f"{xg1:.2f}", f"{xg2:.2f}")
-                renderizar_barra_sofascore("Posse de bola", pos1, pos2, f"{pos1}%", f"{pos2}%")
-                renderizar_barra_sofascore("Total remates", rem1, rem2)
-                renderizar_barra_sofascore("Remates à baliza", bal1, bal2)
-                renderizar_barra_sofascore("Grandes oportunidades", opp1, opp2)
-                renderizar_barra_sofascore("Cantos", cnt1, cnt2)
-                renderizar_barra_sofascore("Passes", pct_p1, pct_p2, txt_passes1, txt_passes2)
-                renderizar_barra_sofascore("Cartões amarelos", yel1, yel2)
-                renderizar_barra_sofascore("Cartões vermelhos", red1, red2)
-            else:
-                st.warning("Não foram encontradas métricas coletivas salvas para esta partida.")
+                red1, red2 = sc.get("vermelhos", [0, 0])[0], sc.get("vermelhos",http://googleusercontent.com/image_generation_content/2
