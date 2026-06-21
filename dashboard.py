@@ -261,8 +261,12 @@ with centro:
             }
             
             dados_raiz["jogos"].append({
-                "id_jogo": Urban_atual := jogo_atual["id_jogo"], "fase": jogo_atual["fase"], "equipas": [eq1, eq2], "resultado": res_final,
-                "estatisticas_coletivas": stats_coletivas, "estatisticas_jogadores": stats_j1 + stats_j2
+                "id_jogo": jogo_atual["id_jogo"], 
+                "fase": jogo_atual["fase"], 
+                "equipas": [eq1, eq2], 
+                "resultado": res_final,
+                "estatisticas_coletivas": stats_coletivas, 
+                "estatisticas_jogadores": stats_j1 + stats_j2
             })
             dados_raiz["proximo_jogo_index"] += 1
             with open(caminho_json, 'w', encoding='utf-8') as f:
@@ -389,7 +393,7 @@ with centro:
                 renderizar_barra_sofascore("Cantos", cnt1, cnt2)
                 renderizar_barra_sofascore("Passes", pct_p1, pct_p2, f"{pct_p1}% ({p_det[0][0]}/{p_det[0][1]})", f"{pct_p2}% ({p_det[1][0]}/{p_det[1][1]})")
                 renderizar_barra_sofascore("Cartões amarelos", yel1, yel2)
-                renderizar_barra_sofascore("Cartões vermelios", red1, red2)
+                renderizar_barra_sofascore("Cartões vermelhos", red1, red2)
 
                 st.markdown("---")
                 col_det1, col_det2 = st.columns(2)
