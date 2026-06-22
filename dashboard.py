@@ -215,7 +215,9 @@ with centro:
         """, unsafe_allow_html=True)
         
         if st.button("⚡ Simular Jogo e Processar Stats"):
-            eq1, eq2 = Urban_atual_eqs := jogo_atual['equipas'][0], jogo_atual['equipas'][1]
+            # LINHA 218 CORRIGIDA: Atribuição simples sem operador walrus
+            eq1, eq2 = jogo_atual['equipas'][0], jogo_atual['equipas'][1]
+            
             stats_j1 = [simular_metricas_jogador(j["nome"], j["posicao"], eq1) for j in pool_jogadores.get(eq1, [])]
             stats_j2 = [simular_metricas_jogador(j["nome"], j["posicao"], eq2) for j in pool_jogadores.get(eq2, [])]
             
