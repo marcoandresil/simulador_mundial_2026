@@ -215,9 +215,7 @@ with centro:
         """, unsafe_allow_html=True)
         
         if st.button("⚡ Simular Jogo e Processar Stats"):
-            # LINHA 218 CORRIGIDA: Atribuição simples sem operador walrus
             eq1, eq2 = jogo_atual['equipas'][0], jogo_atual['equipas'][1]
-            
             stats_j1 = [simular_metricas_jogador(j["nome"], j["posicao"], eq1) for j in pool_jogadores.get(eq1, [])]
             stats_j2 = [simular_metricas_jogador(j["nome"], j["posicao"], eq2) for j in pool_jogadores.get(eq2, [])]
             
@@ -469,7 +467,7 @@ with centro:
             st.markdown("---")
             col_det1, col_det2 = st.columns(2)
             with col_det1:
-                st.markdown("#### ⚽ Marcadores da Partida")
+                st.markdown("#### **Marcadores da Partida**")
                 if not foi_realizado:
                     st.write("*Partida agendada. Aguarda a simulação.*")
                 else:
@@ -482,7 +480,7 @@ with centro:
                         if marcadores_jogo_eq2: st.markdown(f"**{eq2}:** " + ", ".join(marcadores_jogo_eq2))
 
             with col_det2:
-                st.markdown("#### 🌟 Homem do Jogo (MVP)")
+                st.markdown("#### **Homem do Jogo (MVP)**")
                 if not foi_realizado:
                     st.write("*Disponível após o fim do confronto.*")
                 elif jogadores_partida:
@@ -544,7 +542,9 @@ with centro:
             tipo_grafico = st.selectbox("Escolha o formato do gráfico:", ["Barras", "Linhas", "Pizza / Tarte"])
             
         coluna_alvo = opcoes_metricas[metrica_selecionada]
-        df_ordenado = df_analytics.sort_values(by=coluna_alvo, ascending=False)
+        
+        # MODIFICAÇÃO SOLICITADA: Ordenação estrita por ordem alfabética da coluna 'Equipa'
+        df_ordenado = df_analytics.sort_values(by="Equipa", ascending=True)
         
         if tipo_grafico == "Barras":
             fig = px.bar(
@@ -572,6 +572,8 @@ with centro:
         
         st.markdown("##### 📌 Líderes da Métrica Selecionada")
         if not df_ordenado.empty:
-            lider_nome = df_ordenado.iloc[0]["Equipa"]
-            lider_valor = df_ordenado.iloc[0][coluna_alvo]
+            # Encontrar o líder real baseado na métrica mesmo que o df esteja alfabético
+            linha_lider = df_analytics.sort_values(by=coluna_alvo, ascending=False).iloc[0]
+            lider_nome = linha_lider["Equipa"]
+            lider_valor = linha_lider[coluna_alvo]
             st.write(f"A seleção mais destacada em **{metrica_selecionada}** é **{lider_nome}** com um total de **{lider_valor}**.")
