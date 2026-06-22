@@ -130,7 +130,7 @@ if "inicializado" not in st.session_state:
     random.shuffle(selecoes)
     grupo_a = selecoes[:4]
     grupo_b = selecoes[4:]
-    st.session_state["definicao_grupos"] = {"Grupo A": group_a, "Grupo B": grupo_b}
+    st.session_state["definicao_grupos"] = {"Grupo A": grupo_a, "Grupo B": grupo_b}
     
     comb_a = list(itertools.combinations(grupo_a, 2))
     comb_b = list(itertools.combinations(grupo_b, 2))
@@ -200,7 +200,6 @@ with centro:
             json.dump(dados_raiz, f, indent=2, ensure_ascii=False)
         st.rerun()
 
-    # Leitura global dos dados dos jogadores para o encerramento
     dados_jogadores = carregar_dados_mundial(caminho_json)
 
     # --- CONTROLO DO BOTÃO DE SIMULAÇÃO / ENCERRAMENTO ---
@@ -216,7 +215,7 @@ with centro:
         """, unsafe_allow_html=True)
         
         if st.button("⚡ Simular Jogo e Processar Stats"):
-            eq1, eq2 = jogo_atual['equipas'][0], jogo_atual['equipas'][1]
+            eq1, eq2 = Urban_atual_eqs := jogo_atual['equipas'][0], jogo_atual['equipas'][1]
             stats_j1 = [simular_metricas_jogador(j["nome"], j["posicao"], eq1) for j in pool_jogadores.get(eq1, [])]
             stats_j2 = [simular_metricas_jogador(j["nome"], j["posicao"], eq2) for j in pool_jogadores.get(eq2, [])]
             
@@ -273,7 +272,6 @@ with centro:
                 json.dump(dados_raiz, f, indent=2, ensure_ascii=False)
             st.rerun()
     else:
-        # --- ALTERAÇÃO: ANÚNCIO DE ENCERRAMENTO DETALHADO (CAMPEÃO + MVP) ---
         lista_final_jogos = dados_raiz.get("jogos", [])
         jogo_final = next((j for j in lista_final_jogos if j["id_jogo"] == "F1"), None)
         
@@ -283,7 +281,6 @@ with centro:
             gf_g1, gf_g2 = map(int, jogo_final["resultado"].split("-"))
             campeao_nome = gf_eq1 if gf_g1 > gf_g2 else gf_eq2
 
-        # Calcular o MVP real do torneio completo (Maior nota média)
         mvp_torneio_nome = "Ninguém"
         mvp_torneio_nota = 0.0
         mvp_torneio_equipa = ""
@@ -315,7 +312,6 @@ with centro:
 
     st.markdown("---")
 
-    # --- LISTAGEM DAS ABAS ---
     aba_geral, aba_jogos, aba_analytics = st.tabs(["📊 Tabelas Classificativas & Rankings", "📜 Histórico de Jogos", "📈 Análise Comparativa Avançada"])
 
     with aba_geral:
