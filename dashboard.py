@@ -153,6 +153,28 @@ idx_proximo = dados_raiz.get("proximo_jogo_index", 0)
 calendario = dados_raiz.get("jogos_calendario", [])
 dados_equipas = obter_classificacao_com_zeros(dados_raiz, definicao_grupos)
 
+# --- CONFIGURAÇÃO DA BARRA LATERAL (SIDEBAR) ---
+with st.sidebar:
+    st.header("⚙️ Painel de Controlo")
+    st.markdown("---")
+    
+    # Secção dedicada aos créditos solicitados
+    st.markdown(
+        """
+        <div style="background-color: #0c2340; padding: 15px; border-radius: 8px; border: 1px solid #1e3a5f; text-align: center; color: white; margin-bottom: 20px; font-family: sans-serif;">
+            <p style="margin: 0; font-size: 12px; text-transform: uppercase; color: #cbd5e1; letter-spacing: 0.05em;">👨‍💻 Engenharia de Software</p>
+            <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold; color: #f59e0b;">Desenvolvido por:<br>Marco Silva</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    
+    st.markdown("Opções do Simulador:")
+    if st.button("🔄 Reiniciar Todo o Torneio"):
+        if "inicializado" in st.session_state: del st.session_state["inicializado"]
+        if "ultimo_resultado_html" in st.session_state: del st.session_state["ultimo_resultado_html"]
+        st.rerun()
+
 # --- LAYOUT CENTRADO ---
 margem_esq, centro, margem_dir = st.columns([1, 4, 1])
 
@@ -304,11 +326,6 @@ with centro:
             </div>
         </div>
         """, unsafe_allow_html=True)
-
-        if st.button("🔄 Sorteador Pro: Novo Torneio e Grupos Sequenciais"):
-            if "inicializado" in st.session_state: del st.session_state["inicializado"]
-            if "ultimo_resultado_html" in st.session_state: del st.session_state["ultimo_resultado_html"]
-            st.rerun()
 
     st.markdown("---")
 
@@ -543,7 +560,7 @@ with centro:
             
         coluna_alvo = opcoes_metricas[metrica_selecionada]
         
-        # MODIFICAÇÃO SOLICITADA: Ordenação estrita por ordem alfabética da coluna 'Equipa'
+        # Ordenação fixada estritamente por ordem alfabética da coluna 'Equipa'
         df_ordenado = df_analytics.sort_values(by="Equipa", ascending=True)
         
         if tipo_grafico == "Barras":
@@ -572,7 +589,6 @@ with centro:
         
         st.markdown("##### 📌 Líderes da Métrica Selecionada")
         if not df_ordenado.empty:
-            # Encontrar o líder real baseado na métrica mesmo que o df esteja alfabético
             linha_lider = df_analytics.sort_values(by=coluna_alvo, ascending=False).iloc[0]
             lider_nome = linha_lider["Equipa"]
             lider_valor = linha_lider[coluna_alvo]
