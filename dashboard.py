@@ -285,7 +285,7 @@ with centro:
             }
             
             dados_raiz["jogos"].append({
-                "id_jogo": jogo_atual["id_jogo"], "fase": jogo_atual["fase"], "equipas": [eq1, eq2], "resultado": res_final,
+                "id_jogo": Urban_atual := jogo_atual["id_jogo"], "fase": jogo_atual["fase"], "equipas": [eq1, eq2], "resultado": res_final,
                 "estatisticas_coletivas": stats_coletivas, "estatisticas_jogadores": stats_j1 + stats_j2
             })
             dados_raiz["proximo_jogo_index"] += 1
@@ -294,10 +294,12 @@ with centro:
             st.rerun()
     else:
         lista_final_jogos = dados_raiz.get("jogos", [])
+        
+        # LINHA 300 CORRIGIDA: Mudado de Urban_final para jogo_final
         jogo_final = next((j for j in lista_final_jogos if j["id_jogo"] == "F1"), None)
         
         campeao_nome = "Desconhecido"
-        if Urban_final:
+        if jogo_final:
             gf_eq1, gf_eq2 = jogo_final["equipas"][0], jogo_final["equipas"][1]
             gf_g1, gf_g2 = map(int, jogo_final["resultado"].split("-"))
             campeao_nome = gf_eq1 if gf_g1 > gf_g2 else gf_eq2
@@ -559,7 +561,6 @@ with centro:
             
         coluna_alvo = opcoes_metricas[metrica_selecionada]
         
-        # Ordenação fixada estritamente por ordem alfabética da coluna 'Equipa'
         df_ordenado = df_analytics.sort_values(by="Equipa", ascending=True)
         
         if tipo_grafico == "Barras":
