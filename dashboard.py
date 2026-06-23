@@ -158,7 +158,6 @@ with st.sidebar:
     st.header("⚙️ Painel de Controlo")
     st.markdown("---")
     
-    # Secção com o título atualizado para Data Analysis
     st.markdown(
         """
         <div style="background-color: #0c2340; padding: 15px; border-radius: 8px; border: 1px solid #1e3a5f; text-align: center; color: white; margin-bottom: 20px; font-family: sans-serif;">
@@ -298,7 +297,7 @@ with centro:
         jogo_final = next((j for j in lista_final_jogos if j["id_jogo"] == "F1"), None)
         
         campeao_nome = "Desconhecido"
-        if jogo_final:
+        if Urban_final:
             gf_eq1, gf_eq2 = jogo_final["equipas"][0], jogo_final["equipas"][1]
             gf_g1, gf_g2 = map(int, jogo_final["resultado"].split("-"))
             campeao_nome = gf_eq1 if gf_g1 > gf_g2 else gf_eq2
@@ -322,7 +321,7 @@ with centro:
             <div style="background-color: rgba(255,255,255,0.1); max-width: 550px; margin: 15px auto 0 auto; padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">
                 <p style="margin: 0; font-size: 14px; text-transform: uppercase; color: #cbd5e1; font-weight: bold; letter-spacing: 0.05em;">🥇 Melhor Jogador do Torneio (MVP)</p>
                 <p style="margin: 4px 0 0 0; font-size: 19px; font-weight: bold; color: #f59e0b;">{mvp_torneio_nome} <span style="font-size: 14px; font-weight: normal; color: #e2e8f0;">({mvp_torneio_equipa})</span></p>
-                <p style="margin: 2px 0 0 0; font-size: 15px; font-weight: bold; color: #34d399;">Nota Média SofaScore: {mvp_torneio_nota} / 10.0</p>
+                <p style="margin: 2px 0 0 0; font-size: 15px; font-weight: bold; color: #34d399;">Nota Média de Jogo: {mvp_torneio_nota} / 10.0</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -428,7 +427,7 @@ with centro:
                 jogadores_partida = []
             
             st.markdown("#### **Principais**")
-            def renderizar_barra_sofascore(label, val1, val2, txt1=None, txt2=None):
+            def renderizar_barra_desempenho(label, val1, val2, txt1=None, txt2=None):
                 v1, v2 = float(val1), float(val2)
                 total = v1 + v2
                 
@@ -471,15 +470,15 @@ with centro:
             yel1, yel2 = sc.get("amarelos", [0, 0])[0], sc.get("amarelos", [0, 0])[1]
             red1, red2 = sc.get("vermelhos", [0, 0])[0], sc.get("vermelhos", [0, 0])[1]
 
-            renderizar_barra_sofascore("Golos esperados (xG)", xg1, xg2, f"{xg1:.2f}", f"{xg2:.2f}")
-            renderizar_barra_sofascore("Posse de bola", pos1, pos2, f"{pos1}%", f"{pos2}%")
-            renderizar_barra_sofascore("Total remates", rem1, rem2)
-            renderizar_barra_sofascore("Remates à baliza", bal1, bal2)
-            renderizar_barra_sofascore("Grandes oportunidades", opp1, opp2)
-            renderizar_barra_sofascore("Cantos", cnt1, cnt2)
-            renderizar_barra_sofascore("Passes", pct_p1, pct_p2, f"{pct_p1}% ({p_det[0][0]}/{p_det[0][1]})", f"{pct_p2}% ({p_det[1][0]}/{p_det[1][1]})")
-            renderizar_barra_sofascore("Cartões amarelos", yel1, yel2)
-            renderizar_barra_sofascore("Cartões vermelhos", red1, red2)
+            renderizar_barra_desempenho("Golos esperados (xG)", xg1, xg2, f"{xg1:.2f}", f"{xg2:.2f}")
+            renderizar_barra_desempenho("Posse de bola", pos1, pos2, f"{pos1}%", f"{pos2}%")
+            renderizar_barra_desempenho("Total remates", rem1, rem2)
+            renderizar_barra_desempenho("Remates à baliza", bal1, bal2)
+            renderizar_barra_desempenho("Grandes oportunidades", opp1, opp2)
+            renderizar_barra_desempenho("Cantos", cnt1, cnt2)
+            renderizar_barra_desempenho("Passes", pct_p1, pct_p2, f"{pct_p1}% ({p_det[0][0]}/{p_det[0][1]})", f"{pct_p2}% ({p_det[1][0]}/{p_det[1][1]})")
+            renderizar_barra_desempenho("Cartões amarelos", yel1, yel2)
+            renderizar_barra_desempenho("Cartões vermelhos", red1, red2)
 
             st.markdown("---")
             col_det1, col_det2 = st.columns(2)
@@ -506,7 +505,7 @@ with centro:
                     <div style="background-color: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid #ff4b4b; font-family: sans-serif;">
                         <span style="font-size: 16px; font-weight: bold; color: #0c2340;">🥇 {mvp_jogador['nome']}</span>
                         <div style="font-size: 13px; color: #475569; margin-top: 3px;">🏃 Seleção: <b>{mvp_jogador['equipa']}</b> | Posição: <i>{mvp_jogador['posicao']}</i></div>
-                        <div style="font-size: 15px; font-weight: bold; color: #ff4b4b; margin-top: 5px;">⭐ Nota SofaScore: {calcular_pontuacao_jogador(mvp_jogador)} / 10.0</div>
+                        <div style="font-size: 15px; font-weight: bold; color: #ff4b4b; margin-top: 5px;">⭐ Avaliação de Jogo: {calcular_pontuacao_jogador(mvp_jogador)} / 10.0</div>
                     </div>
                     """, unsafe_allow_html=True)
 
