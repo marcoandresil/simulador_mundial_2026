@@ -158,11 +158,11 @@ with st.sidebar:
     st.header("⚙️ Painel de Controlo")
     st.markdown("---")
     
-    # Secção dedicada aos créditos solicitados
+    # Secção com o título atualizado para Data Analysis
     st.markdown(
         """
         <div style="background-color: #0c2340; padding: 15px; border-radius: 8px; border: 1px solid #1e3a5f; text-align: center; color: white; margin-bottom: 20px; font-family: sans-serif;">
-            <p style="margin: 0; font-size: 12px; text-transform: uppercase; color: #cbd5e1; letter-spacing: 0.05em;">👨‍💻 Engenharia de Software</p>
+            <p style="margin: 0; font-size: 12px; text-transform: uppercase; color: #cbd5e1; letter-spacing: 0.05em;">📊 Data Analysis</p>
             <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold; color: #f59e0b;">Desenvolvido por:<br>Marco Silva</p>
         </div>
         """,
