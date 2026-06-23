@@ -284,8 +284,9 @@ with centro:
                 "vermelhos": [random.choices([0, 1], weights=[95, 5])[0], random.choices([0, 1], weights=[95, 5])[0]]
             }
             
+            # ATRIBUIÇÃO CORRIGIDA: Removida sintaxe inválida de atribuição interna no dicionário
             dados_raiz["jogos"].append({
-                "id_jogo": Urban_atual := jogo_atual["id_jogo"], "fase": jogo_atual["fase"], "equipas": [eq1, eq2], "resultado": res_final,
+                "id_jogo": jogo_atual["id_jogo"], "fase": jogo_atual["fase"], "equipas": [eq1, eq2], "resultado": res_final,
                 "estatisticas_coletivas": stats_coletivas, "estatisticas_jogadores": stats_j1 + stats_j2
             })
             dados_raiz["proximo_jogo_index"] += 1
@@ -295,7 +296,7 @@ with centro:
     else:
         lista_final_jogos = dados_raiz.get("jogos", [])
         
-        # LINHA 300 CORRIGIDA: Mudado de Urban_final para jogo_final
+        # MUDANÇA CORRIGIDA: Variável restaurada com sucesso de Urban_final para jogo_final
         jogo_final = next((j for j in lista_final_jogos if j["id_jogo"] == "F1"), None)
         
         campeao_nome = "Desconhecido"
@@ -330,6 +331,7 @@ with centro:
 
     st.markdown("---")
 
+    # --- LISTAGEM DAS ABAS ---
     aba_geral, aba_jogos, aba_analytics = st.tabs(["📊 Tabelas Classificativas & Rankings", "📜 Histórico de Jogos", "📈 Análise Comparativa Avançada"])
 
     with aba_geral:
